@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2340">
+<title>Elitis Express · Menu à bord</title>
+<style>
+:root{
+  /* ===== COULEURS DE MARQUE ELITIS : remplacer ces 4 valeurs par les couleurs officielles =====
+     --navy  = couleur principale (en-tête, boutons)   --amber = couleur d'accent (siège choisi, bouton final) */
+  --navy:#0f2340; --navy2:#1b3560; --amber:#f5a524; --amber-d:#c9820a;
+  --bg:#f3f5f8; --card:#fff; --ink:#18202c; --mute:#6b7585; --line:#e3e7ee;
+  --win:#1f8fbf; --ais:#7a5bd1; --ok:#1e9e5a; --bad:#d6453d;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea{font:inherit}
+.app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:110px}
+header.top{background:var(--navy);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{height:38px;min-width:38px;border-radius:10px;background:#fff;display:grid;place-items:center;padding:3px 6px;flex:none}
+.logo img{height:100%;width:auto;max-width:110px;display:block}
+.logo.txt{background:var(--amber);color:var(--navy);font-weight:800;font-size:18px;padding:0}
+.brand h1{font-size:17px;margin:0;line-height:1.1}
+.brand small{opacity:.75;font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand>div:nth-child(2){min-width:0;flex:1}
+.steps{display:flex;gap:6px;margin-top:12px}
+.steps div{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.2)}
+.steps div.on{background:var(--amber)}
+.seatchip{margin-left:auto;background:rgba(255,255,255,.12);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600}
+.wrap{padding:16px}
+h2{font-size:20px;margin:4px 0 4px}
+p.lead{color:var(--mute);margin:0 0 14px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:0 1px 3px rgba(15,35,64,.08);padding:14px}
+
+/* seat map */
+.pref{display:flex;background:#e6eaf1;border-radius:12px;padding:4px;margin-bottom:12px}
+.pref button{flex:1;padding:9px 6px;border-radius:9px;font-weight:600;color:var(--mute);font-size:14px}
+.pref button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:14px;height:14px;border-radius:4px;display:inline-block;border:2px solid}
+.bus{background:#fff;border-radius:40px 40px 18px 18px;padding:18px 14px 16px;box-shadow:0 1px 3px rgba(15,35,64,.1);border:2px solid var(--line)}
+.front{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--mute);padding:0 6px 12px;border-bottom:2px dashed var(--line);margin-bottom:12px}
+.wheel{width:30px;height:30px;border:3px solid var(--mute);border-radius:50%;position:relative}
+.wheel:after{content:"";position:absolute;left:50%;top:50%;width:3px;height:12px;background:var(--mute);transform:translate(-50%,-10%)}
+.row{display:grid;grid-template-columns:22px 1fr 1fr 34px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.rown{font-size:11px;color:var(--mute);text-align:center}
+.aisle{font-size:9px;color:#b7bfcc;text-align:center;letter-spacing:.5px}
+.seat{position:relative;height:46px;border-radius:10px 10px 6px 6px;background:#eef1f6;border:2px solid #d5dbe5;font-weight:700;font-size:15px;color:var(--ink);transition:transform .1s,opacity .15s}
+.seat small{display:block;font-size:9px;font-weight:600;color:var(--mute);margin-top:-2px}
+.seat.w{border-color:#9fd0e6}
+.seat.w.l{box-shadow:inset 5px 0 0 var(--win)}
+.seat.w.r{box-shadow:inset -5px 0 0 var(--win)}
+.seat.a{border-color:#c9bdf0}
+.seat.dim{opacity:.28}
+.seat.sel{background:var(--amber);border-color:var(--amber-d);color:var(--navy)}
+.seat.sel small{color:var(--navy)}
+.seat:active{transform:scale(.95)}
+.back{font-size:12px;color:var(--mute);text-align:center;border-top:2px dashed var(--line);padding-top:10px;margin-top:6px}
+
+/* menu */
+.cats{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--bg);position:sticky;top:64px;z-index:15;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;padding:8px 14px;border-radius:20px;background:#fff;border:1px solid var(--line);font-weight:600;font-size:14px;white-space:nowrap}
+.cats button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sec{padding:0 16px}
+.sec h3{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:18px 0 8px}
+.item{background:#fff;border-radius:var(--r);padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(15,35,64,.06)}
+.item.has{outline:2px solid var(--amber)}
+.ihead{display:flex;justify-content:space-between;gap:10px}
+.iname{font-weight:700}
+.idesc{font-size:12.5px;color:var(--mute);margin-top:2px}
+.iprice{font-weight:700;white-space:nowrap;color:var(--navy2)}
+.vline{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:10px}
+.vline .vl{font-size:14px}
+.vline .vl b{color:var(--navy2)}
+.step{display:flex;align-items:center;gap:2px;background:#f1f3f7;border-radius:22px}
+.step button{width:36px;height:36px;border-radius:50%;font-size:20px;font-weight:700;display:grid;place-items:center}
+.step button.plus{background:var(--navy);color:#fff}
+.step span{min-width:22px;text-align:center;font-weight:700}
+.step.zero span,.step.zero .minus{display:none}
+.step.zero{background:none}
+
+/* bottom bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.bar .in{max-width:528px;margin:0 auto}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 18px;border-radius:14px;background:var(--navy);color:#fff;font-weight:700;font-size:16px;box-shadow:0 6px 16px rgba(15,35,64,.25)}
+.btn.amber{background:var(--amber);color:var(--navy)}
+.btn.ghost{background:#fff;color:var(--navy);box-shadow:none;border:2px solid var(--line)}
+.btn[disabled]{opacity:.4;box-shadow:none}
+.btn .sp{margin-left:auto;font-weight:600;opacity:.9}
+.btn .cnt{background:rgba(255,255,255,.2);border-radius:8px;padding:2px 8px;font-size:14px}
+.btn.amber .cnt{background:rgba(15,35,64,.12)}
+
+/* cart */
+.cline{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cline:last-child{border-bottom:0}
+.cline .nm{flex:1}
+.cline .nm small{display:block;color:var(--mute)}
+.tot{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:12px}
+textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:none;min-height:60px;background:#fff}
+label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
+
+/* QR ticket */
+.ticket{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 18px rgba(15,35,64,.12)}
+.ticket .th{background:var(--navy);color:#fff;padding:16px;text-align:center}
+.ticket .th .big{font-size:40px;font-weight:800;color:var(--amber);line-height:1}
+.ticket .qr{padding:18px 28px 6px}
+.ticket .qr svg{width:100%;height:auto;display:block}
+.ticket .code{text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:20px;letter-spacing:4px;font-weight:700;padding-bottom:12px}
+.ticket .tb{border-top:2px dashed var(--line);padding:14px 18px}
+.tip{background:#fff7e6;border:1px solid #fde2a8;color:#7a5200;border-radius:12px;padding:10px 12px;font-size:13px;margin:14px 0}
+.mt{margin-top:12px}
+
+/* hostess */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#fff;border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:11px;color:var(--mute)}
+.tabs{display:flex;gap:6px;margin:14px 0 10px}
+.tabs button{flex:1;padding:9px;border-radius:10px;background:#e6eaf1;font-weight:600;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff}
+.ord{background:#fff;border-radius:var(--r);padding:12px 14px;margin-bottom:10px;border-left:6px solid var(--amber)}
+.ord.served{border-left-color:var(--ok);opacity:.75}
+.ord.flash{animation:fl 1.2s}
+@keyframes fl{0%{background:#fff3d6}100%{background:#fff}}
+.oh{display:flex;align-items:center;gap:10px}
+.oseat{background:var(--navy);color:#fff;border-radius:10px;padding:6px 10px;font-weight:800;font-size:18px;text-align:center;min-width:54px}
+.oseat small{display:block;font-size:9px;font-weight:600;opacity:.8}
+.ometa{flex:1;font-size:12px;color:var(--mute)}
+.ometa b{color:var(--ink);font-size:16px}
+.olist{margin:10px 0 4px;padding:0;list-style:none;font-size:14px}
+.olist li{display:flex;justify-content:space-between;padding:3px 0}
+.onote{font-size:13px;background:#f3f5f8;border-radius:8px;padding:6px 8px;margin-top:6px}
+.oact{display:flex;gap:8px;margin-top:10px}
+.oact button{flex:1;padding:10px;border-radius:10px;font-weight:700;font-size:14px;background:#f1f3f7}
+.oact button.on{background:var(--ok);color:#fff}
+.oact button.del{flex:none;width:44px;color:var(--bad)}
+.badge{font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;background:#e9f7ef;color:var(--ok);margin-left:6px}
+.badge.unpaid{background:#fdecea;color:var(--bad)}
+.prep li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.prep{list-style:none;margin:0;padding:0}
+.empty{text-align:center;color:var(--mute);padding:30px 10px}
+
+.scan{position:fixed;inset:0;background:#000;z-index:50;display:none;flex-direction:column}
+.scan.on{display:flex}
+.scan video{flex:1;width:100%;object-fit:cover}
+.scan .frame{position:absolute;left:50%;top:45%;width:70vw;max-width:320px;aspect-ratio:1;transform:translate(-50%,-50%);border:3px solid var(--amber);border-radius:20px;box-shadow:0 0 0 2000px rgba(0,0,0,.45)}
+.scan .sbar{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+.scan .msg{color:#fff;text-align:center;font-weight:600;text-shadow:0 1px 3px #000}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-150%);background:var(--ok);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:60;transition:transform .25s;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0)}
+.toast.err{background:var(--bad)}
+
+/* admin / print */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field input{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.sheet{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.qcard{background:#fff;border:1.5px solid #222;border-radius:12px;padding:10px;text-align:center;break-inside:avoid}
+.qcard .qh{font-weight:800;font-size:13px}
+.qcard .qs{font-size:30px;font-weight:900;line-height:1.1}
+.qcard .qp{font-size:11px;color:#444}
+.qcard svg{width:78%;height:auto}
+.qcard .qf{font-size:10px;color:#555}
+@media print{
+  header.top,.noprint,.bar{display:none!important}
+  body,html{background:#fff}
+  .app{max-width:none;padding:0}
+  .sheet{grid-template-columns:repeat(3,1fr);gap:6mm}
+  .qcard{border-radius:4mm}
+}
+.foot{text-align:center;font-size:11px;color:var(--mute);margin:24px 0 8px}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="bar" id="bar"></div>
+<div class="toast" id="toast"></div>
+<div class="scan" id="scan">
+  <video id="vid" playsinline muted></video>
+  <div class="frame"></div>
+  <div class="sbar">
+    <div class="msg" id="scanmsg">Placez le code QR du voyageur dans le cadre</div>
+    <button class="btn amber" id="scanclose">Terminer le scan</button>
+  </div>
+</div>
+<canvas id="cv" hidden></canvas>
+
+<script>/*LIBS*/</script>
+<script>
+"use strict";
+/* ============ CONFIGURATION ============
+   SEATS_DEFAULT : nombre total de sièges (à confirmer avec Elitis).
+   Peut aussi être passé dans l'URL : ?n=60
+   Numérotation : rangée gauche 1 (fenêtre) | 2 (couloir), rangée droite 3 (fenêtre) | 4 (couloir), etc. */
+const SEATS_DEFAULT = 54;   // bus MAN/Irizar Elitis : 54 places (source : presse 2017), à confirmer
+const COMPANY = "Elitis Express";
+const TAGLINE = "La passion du voyage";
+/* Logo : déposez le logo officiel sous le nom logo.png à côté de index.html (sinon un badge « E » s'affiche). */
+const LOGO_FILE = "logo.png";
+const LOGO = `<div class="logo"><img src="${LOGO_FILE}" alt="Elitis Express" onerror="this.parentNode.className='logo txt';this.replaceWith('E')"></div>`;
+const CATERER = "Hôtels Tanoudja";
+const PAYLOAD_PREFIX = "ELT1";
+
+/* ============ MENU (source : carte Hôtels Tanoudja) ============ */
+const CATS = [
+  {id:"poulet", label:"Poulets"},
+  {id:"grill",  label:"Grillades & sautés"},
+  {id:"snack",  label:"Snacks"},
+  {id:"pizza",  label:"Pizzas"},
+  {id:"acc",    label:"Accompagnements"}
+];
+const MENU = [
+  {id:"p1",cat:"poulet",name:"Poulet Tanoudja",price:7000,desc:"La spécialité de la maison"},
+  {id:"p2",cat:"poulet",name:"Poulet pané entier",price:6000},
+  {id:"p3",cat:"poulet",name:"Pané ¼ + frites",price:2500},
+  {id:"p4",cat:"poulet",name:"Pané au sésame",price:6500},
+  {id:"p5",cat:"poulet",name:"Pané au sésame ¼ + frites",price:3000},
+  {id:"p6",cat:"poulet",name:"Poulet rôti Boromo",v:[["Petit",5000],["Grand",6000]]},
+  {id:"p7",cat:"poulet",name:"Poulet braisé",v:[["Petit",5000],["Grand",6000]]},
+  {id:"p8",cat:"poulet",name:"Poulet télévisé",v:[["Petit",5000],["Moyen",6000],["Grand",7000]]},
+  {id:"p9",cat:"poulet",name:"Poulet sauté",price:6000},
+  {id:"g1",cat:"grill",name:"Brochettes de filet de bœuf + frites",price:6000},
+  {id:"g2",cat:"grill",name:"Poisson braisé (Samandeni)",v:[["Petit",3000],["Moyen",4000],["Grand",5000]]},
+  {id:"g3",cat:"grill",name:"Gésier télévisé",price:250,desc:"Prix à l'unité"},
+  {id:"g4",cat:"grill",name:"Gésier sauté",price:2500},
+  {id:"g5",cat:"grill",name:"Langue de bœuf sautée",price:3000},
+  {id:"g6",cat:"grill",name:"Foie sauté",price:2500},
+  {id:"g7",cat:"grill",name:"Mouton frit",price:2500},
+  {id:"s1",cat:"snack",name:"Chawarma poulet",price:2000},
+  {id:"s2",cat:"snack",name:"Chawarma poisson / viande",choice:1,cname:"Chawarma ",v:[["Poisson",1500],["Viande",1500]]},
+  {id:"s3",cat:"snack",name:"Hamburger",price:2500},
+  {id:"s4",cat:"snack",name:"Pain anglais",price:1000},
+  {id:"s5",cat:"snack",name:"Nems (4 unités)",price:2000},
+  {id:"z1",cat:"pizza",name:"Pizza Margherita",price:4000,desc:"Sauce tomate, fromage"},
+  {id:"z2",cat:"pizza",name:"Pizza viande hachée",price:5000,desc:"Sauce tomate, viande hachée, fromage, légumes"},
+  {id:"z3",cat:"pizza",name:"Pizza Reine",v:[["Jambon",6000],["Saucisson",6000]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires"},
+  {id:"z4",cat:"pizza",name:"Pizza Royale",v:[["Jambon",6500],["Saucisson",6500]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires, œuf"},
+  {id:"z5",cat:"pizza",name:"Pizza Tanoudja",price:7000,desc:"Sauce tomate, viande hachée, légumes, fromage, gésier"},
+  {id:"a1",cat:"acc",name:"Frites / Alloco",choice:1,v:[["Frites",1000],["Alloco",1000]]},
+  {id:"a2",cat:"acc",name:"Attiéké / Riz blanc",choice:1,v:[["Attiéké",1000],["Riz blanc",1000]]}
+];
+const BY_ID = Object.fromEntries(MENU.map(m=>[m.id,m]));
+function variants(m){ return m.v ? m.v : [[null,m.price]]; }
+function priceOf(id,vi){ const m=BY_ID[id]; return m ? variants(m)[vi]?.[1] ?? 0 : 0; }
+function labelOf(id,vi){ const m=BY_ID[id]; if(!m) return "Article inconnu ("+id+")"; const v=variants(m)[vi]; if(!(v&&v[0])) return m.name; return m.choice ? (m.cname||"")+v[0] : m.name+" · "+v[0]; }
+
+/* ============ HELPERS ============ */
+const $ = s=>document.querySelector(s);
+const app = $("#app"), bar = $("#bar");
+const params = new URLSearchParams(location.search);
+const MODE = (params.get("mode")||"").toLowerCase();
+const NSEATS = Math.max(4, Math.min(120, parseInt(params.get("n"))||SEATS_DEFAULT));
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,"\u00a0")+"\u00a0F";
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+function seatInfo(n){
+  const pos = (n-1)%4;               // 0:G fenêtre, 1:G couloir, 2:D fenêtre, 3:D couloir
+  return { n, row: Math.floor((n-1)/4)+1, side: pos<2?"Gauche":"Droite", type: (pos===0||pos===2)?"Fenêtre":"Couloir" };
+}
+function qrSvg(text, ec){
+  const q = qrcode(0, ec||"M"); q.addData(text); q.make();
+  return q.createSvgTag({cellSize:4, margin:2, scalable:true});
+}
+let toastT;
+function toast(msg, err){
+  const t=$("#toast"); t.textContent=msg; t.className="toast on"+(err?" err":"");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.className="toast"+(err?" err":""),2200);
+}
+function header(stepIdx, right){
+  const steps = stepIdx==null ? "" : `<div class="steps">${[0,1,2].map(i=>`<div class="${i<=stepIdx?"on":""}"></div>`).join("")}</div>`;
+  return `<header class="top"><div class="brand">${LOGO}<div><h1>${COMPANY}</h1><small>Menu à bord · ${TAGLINE}</small></div>${right||""}</div>${steps}</header>`;
+}
+
+/* =====================================================
+   VOYAGEUR
+   ===================================================== */
+const T = {
+  seat: store.get("elt_seat", null),
+  cart: store.get("elt_cart", {}),      // key "id.vi" -> qty
+  note: store.get("elt_note", ""),
+  code: store.get("elt_code", null),
+  pref: "all",
+  view: "seat",
+  cat: CATS[0].id
+};
+const urlSeat = parseInt(params.get("s"));
+if(urlSeat>=1 && urlSeat<=NSEATS){ T.seat = urlSeat; T.view = "menu"; }
+else if(T.seat && T.seat>NSEATS) T.seat=null;
+if(T.seat && !urlSeat && Object.keys(T.cart).length) T.view="menu";
+function saveT(){ store.set("elt_seat",T.seat); store.set("elt_cart",T.cart); store.set("elt_note",T.note); store.set("elt_code",T.code); }
+function cartLines(){ return Object.entries(T.cart).filter(([,q])=>q>0).map(([k,q])=>{ const [id,vi]=k.split("."); return {k,id,vi:+vi,q,p:priceOf(id,+vi)}; }); }
+function cartCount(){ return cartLines().reduce((a,l)=>a+l.q,0); }
+function cartTotal(){ return cartLines().reduce((a,l)=>a+l.q*l.p,0); }
+function setQty(k,d){ const q=Math.max(0,(T.cart[k]||0)+d); if(q) T.cart[k]=q; else delete T.cart[k]; T.code=null; saveT(); }
+
+function renderTraveler(){
+  window.scrollTo(0,0);
+  if(T.view==="seat") return viewSeat();
+  if(T.view==="menu") return viewMenu();
+  if(T.view==="cart") return viewCart();
+  if(T.view==="qr") return viewQR();
+}
+
+function viewSeat(){
+  const rows = Math.ceil(NSEATS/4);
+  const seatBtn = (n, side) => {
+    if(n>NSEATS) return `<div></div>`;
+    const s=seatInfo(n), w=s.type==="Fenêtre";
+    const dim = (T.pref==="win"&&!w)||(T.pref==="ais"&&w);
+    return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${T.seat===n?"sel":""}" data-seat="${n}" aria-label="Siège ${n}, ${s.type}">${n}<small>${w?"Fenêtre":"Couloir"}</small></button>`;
+  };
+  let html = "";
+  for(let r=0;r<rows;r++){
+    const b=r*4;
+    // Gauche : fenêtre (1) puis couloir (2) | allée | Droite : couloir (4) puis fenêtre (3)
+    html += `<div class="row"><div class="rown">${r+1}</div>${seatBtn(b+1,"l")}${seatBtn(b+2,"l")}<div class="aisle">ALLÉE</div>${seatBtn(b+4,"r")}${seatBtn(b+3,"r")}</div>`;
+  }
+  app.innerHTML = header(0) + `<div class="wrap">
+    <h2>Bienvenue à bord</h2>
+    <p class="lead">Choisissez le siège indiqué sur votre billet, puis commandez votre repas. L'hôtesse vous servira directement à votre place.</p>
+    <div class="pref" id="pref">
+      <button data-p="all" class="${T.pref==="all"?"on":""}">Tous</button>
+      <button data-p="win" class="${T.pref==="win"?"on":""}">Fenêtre</button>
+      <button data-p="ais" class="${T.pref==="ais"?"on":""}">Couloir</button>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="border-color:#9fd0e6;box-shadow:inset 4px 0 0 var(--win)"></i>Fenêtre</span>
+      <span><i class="dot" style="border-color:#c9bdf0"></i>Couloir</span>
+      <span><i class="dot" style="background:var(--amber);border-color:var(--amber-d)"></i>Votre siège</span>
+    </div>
+    <div class="bus">
+      <div class="front"><div class="wheel"></div><span>AVANT DU BUS</span><span>Porte ▸</span></div>
+      ${html}
+      <div class="back">ARRIÈRE</div>
+    </div>
+  </div>`;
+  app.querySelectorAll("[data-seat]").forEach(b=>b.onclick=()=>{ T.seat=+b.dataset.seat; saveT(); viewSeat(); });
+  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ T.pref=b.dataset.p; viewSeat(); });
+  const s = T.seat && seatInfo(T.seat);
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="go" ${T.seat?"":"disabled"}>${s?`Siège ${s.n} · ${s.type}`:"Sélectionnez un siège"}<span class="sp">Voir le menu ›</span></button></div>`;
+  $("#go").onclick=()=>{ if(T.seat){ T.view="menu"; renderTraveler(); } };
+  if(T.seat){ const el=app.querySelector(`[data-seat="${T.seat}"]`); el&&el.scrollIntoView({block:"center"}); }
+}
+
+function stepper(k){
+  const q=T.cart[k]||0;
+  return `<div class="step ${q?"":"zero"}"><button class="minus" data-k="${k}" data-d="-1" aria-label="Retirer">−</button><span>${q}</span><button class="plus" data-k="${k}" data-d="1" aria-label="Ajouter">+</button></div>`;
+}
+function itemCard(m){
+  const vs=variants(m); const has = vs.some((_,i)=>T.cart[m.id+"."+i]);
+  let body;
+  if(!m.v){
+    body = `<div class="ihead"><div><div class="iname">${esc(m.name)}</div>${m.desc?`<div class="idesc">${esc(m.desc)}</div>`:""}<div class="iprice mt" style="margin-top:6px">${fmt(m.price)}</div></div>${stepper(m.id+".0")}</div>`;
+  } else {
+    body = `<div class="iname">${esc(m.name)}</div>${m.desc?`<div class="idesc">${esc(m.desc)}</div>`:""}` +
+      vs.map((v,i)=>`<div class="vline"><div class="vl">${esc(v[0])} · <b>${fmt(v[1])}</b></div>${stepper(m.id+"."+i)}</div>`).join("");
+  }
+  return `<div class="item ${has?"has":""}" id="it-${m.id}">${body}</div>`;
+}
+function viewMenu(){
+  const s=seatInfo(T.seat);
+  app.innerHTML = header(1, `<button class="seatchip" id="chg">Siège ${s.n} · ${s.type} ✎</button>`) +
+    `<nav class="cats" id="cats">${CATS.map(c=>`<button data-c="${c.id}" class="${T.cat===c.id?"on":""}">${c.label}</button>`).join("")}</nav>` +
+    CATS.map(c=>`<section class="sec" id="sec-${c.id}"><h3>${c.label}</h3>${MENU.filter(m=>m.cat===c.id).map(itemCard).join("")}</section>`).join("") +
+    `<div class="foot">Carte ${CATERER} · Prix en FCFA · Paiement auprès de l'hôtesse<br>${COMPANY}, ${TAGLINE.toLowerCase()}</div>`;
+  $("#cats").style.top=$("header.top").offsetHeight+"px";
+  $("#chg").onclick=()=>{ T.view="seat"; renderTraveler(); };
+  app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
+    T.cat=b.dataset.c; const sec=$("#sec-"+T.cat);
+    window.scrollTo({top: sec.getBoundingClientRect().top + scrollY - 120, behavior:"smooth"});
+    markCat();
+  });
+  bindSteppers(app, ()=>{ refreshItems(); menuBar(); });
+  menuBar();
+  window.onscroll = ()=>{
+    if(T.view!=="menu") return;
+    let cur=CATS[0].id;
+    for(const c of CATS){ const el=$("#sec-"+c.id); if(el && el.getBoundingClientRect().top<140) cur=c.id; }
+    if(cur!==T.cat){ T.cat=cur; markCat(); }
+  };
+}
+function markCat(){
+  document.querySelectorAll("[data-c]").forEach(b=>{ const on=b.dataset.c===T.cat; b.classList.toggle("on",on); if(on) b.scrollIntoView({inline:"center",block:"nearest"}); });
+}
+function refreshItems(){ MENU.forEach(m=>{ const el=$("#it-"+m.id); if(el){ el.outerHTML=itemCard(m); } }); bindSteppers(app, ()=>{ refreshItems(); menuBar(); }); }
+function bindSteppers(root, after){
+  root.querySelectorAll(".step button").forEach(b=>b.onclick=()=>{ setQty(b.dataset.k, +b.dataset.d); after(); });
+}
+function menuBar(){
+  const c=cartCount();
+  bar.innerHTML = `<div class="in"><button class="btn" id="go" ${c?"":"disabled"}>${c?`<span class="cnt">${c}</span> Voir ma commande<span class="sp">${fmt(cartTotal())}</span>`:"Ajoutez des articles"}</button></div>`;
+  $("#go").onclick=()=>{ if(cartCount()){ T.view="cart"; renderTraveler(); } };
+}
+
+function viewCart(){
+  window.onscroll=null;
+  const s=seatInfo(T.seat), lines=cartLines();
+  if(!lines.length){ T.view="menu"; return renderTraveler(); }
+  app.innerHTML = header(1, `<button class="seatchip" id="chg">Siège ${s.n} · ${s.type} ✎</button>`) + `<div class="wrap">
+    <h2>Ma commande</h2><p class="lead">Vérifiez avant de générer votre code.</p>
+    <div class="card" id="lines">${lines.map(l=>`<div class="cline"><div class="nm">${esc(labelOf(l.id,l.vi))}<small>${fmt(l.p)} × ${l.q} = ${fmt(l.p*l.q)}</small></div>${stepper(l.k)}</div>`).join("")}
+      <div class="tot"><span>Total</span><span>${fmt(cartTotal())}</span></div></div>
+    <label class="lb" for="note">Remarque pour l'hôtesse (facultatif)</label>
+    <textarea id="note" maxlength="80" placeholder="Ex. : sans piment, sauce à part, monnaie sur 10 000 F…">${esc(T.note)}</textarea>
+    <button class="btn ghost mt" id="more">+ Ajouter d'autres articles</button>
+  </div>`;
+  $("#chg").onclick=()=>{ T.view="seat"; renderTraveler(); };
+  $("#more").onclick=()=>{ T.view="menu"; renderTraveler(); };
+  $("#note").oninput=e=>{ T.note=e.target.value; T.code=null; saveT(); };
+  bindSteppers(app, ()=>viewCart());
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="go">Générer mon code QR<span class="sp">${fmt(cartTotal())}</span></button></div>`;
+  $("#go").onclick=()=>{ if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); };
+}
+function newCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; for(let i=0;i<4;i++) c+=a[Math.floor(Math.random()*a.length)]; return c; }
+function buildPayload(){
+  const items = cartLines().map(l=>`${l.id}.${l.vi}x${l.q}`).join(",");
+  const note = encodeURIComponent((T.note||"").trim().slice(0,80));
+  return [PAYLOAD_PREFIX, T.seat, T.code, items, note].join("|");
+}
+function viewQR(){
+  window.onscroll=null;
+  const s=seatInfo(T.seat), lines=cartLines();
+  app.innerHTML = header(2) + `<div class="wrap">
+    <div class="ticket">
+      <div class="th"><div style="font-size:12px;opacity:.8">SIÈGE</div><div class="big">${s.n}</div><div style="font-size:13px;margin-top:4px">${s.type} · Rangée ${s.row} · Côté ${s.side==="Gauche"?"gauche":"droit"}</div></div>
+      <div class="qr">${qrSvg(buildPayload())}</div>
+      <div class="code">${T.code}</div>
+      <div class="tb">
+        ${lines.map(l=>`<div style="display:flex;justify-content:space-between;font-size:14px;padding:2px 0"><span>${l.q} × ${esc(labelOf(l.id,l.vi))}</span><span>${fmt(l.p*l.q)}</span></div>`).join("")}
+        ${T.note.trim()?`<div class="onote">📝 ${esc(T.note.trim())}</div>`:""}
+        <div class="tot"><span>À payer</span><span>${fmt(cartTotal())}</span></div>
+      </div>
+    </div>
+    <div class="tip">Gardez cet écran ouvert. Quand l'hôtesse arrive à votre rangée, montrez-lui ce code : elle le scanne et reçoit votre commande. Pensez à augmenter la luminosité de votre écran.</div>
+    <button class="btn ghost" id="edit">Modifier ma commande</button>
+    <button class="btn ghost mt" id="reset">Nouvelle commande</button>
+    <div class="foot">Commande ${T.code} · ${COMPANY}<br>Merci de voyager avec nous. ${TAGLINE} !</div>
+  </div>`;
+  bar.innerHTML="";
+  $("#edit").onclick=()=>{ T.view="cart"; renderTraveler(); };
+  $("#reset").onclick=()=>{ T.cart={}; T.note=""; T.code=null; saveT(); T.view="menu"; renderTraveler(); };
+}
+
+/* =====================================================
+   HÔTESSE
+   ===================================================== */
+const H = { orders: store.get("elt_orders", []), tab:"todo", last:null };
+function saveH(){ store.set("elt_orders", H.orders); }
+function parsePayload(txt){
+  txt = String(txt||"").trim();
+  const p = txt.split("|");
+  if(p[0]!==PAYLOAD_PREFIX || p.length<4) return null;
+  const seat=parseInt(p[1]); if(!(seat>=1)) return null;
+  const items = (p[3]||"").split(",").filter(Boolean).map(t=>{
+    const m=t.match(/^([a-z0-9]+)\.(\d+)x(\d+)$/i); if(!m) return null;
+    return {id:m[1], vi:+m[2], q:+m[3]};
+  }).filter(Boolean);
+  if(!items.length) return null;
+  let note=""; try{ note=decodeURIComponent(p[4]||""); }catch(e){ note=p[4]||""; }
+  return {seat, code:p[2]||"----", items, note, total: items.reduce((a,i)=>a+i.q*priceOf(i.id,i.vi),0)};
+}
+function addOrder(o){
+  const i = H.orders.findIndex(x=>x.code===o.code && x.seat===o.seat);
+  const now = Date.now();
+  if(i>=0){
+    const prev=H.orders[i];
+    const same = JSON.stringify(prev.items)===JSON.stringify(o.items) && prev.note===o.note;
+    if(same) return {dup:true, o:prev};
+    H.orders[i] = {...prev, ...o, t:now, served:false};
+    saveH(); return {upd:true, o:H.orders[i]};
+  }
+  const rec = {...o, t:now, served:false, paid:false};
+  H.orders.push(rec); saveH(); return {o:rec};
+}
+function renderHostess(){
+  const list = H.orders.slice().sort((a,b)=>a.seat-b.seat);
+  const todo = list.filter(o=>!o.served), done=list.filter(o=>o.served);
+  const cashed = H.orders.filter(o=>o.paid).reduce((a,o)=>a+o.total,0);
+  const expected = H.orders.reduce((a,o)=>a+o.total,0);
+  const shown = H.tab==="todo"?todo : H.tab==="done"?done : null;
+  let body;
+  if(H.tab==="prep"){
+    const agg={};
+    todo.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; }));
+    const ks=Object.keys(agg).sort((a,b)=>agg[b]-agg[a]);
+    body = ks.length ? `<div class="card"><ul class="prep">${ks.map(k=>{const [id,vi]=k.split(".");return `<li><span>${esc(labelOf(id,+vi))}</span><b>× ${agg[k]}</b></li>`;}).join("")}</ul></div>` : `<div class="empty">Rien à préparer pour l'instant.</div>`;
+  } else {
+    body = shown.length ? shown.map(orderCard).join("") : `<div class="empty">${H.tab==="todo"?"Aucune commande en attente.<br>Touchez « Scanner » pour commencer.":"Aucune commande servie."}</div>`;
+  }
+  app.innerHTML = header(null, `<span class="seatchip">Hôtesse</span>`) + `<div class="wrap">
+    <div class="stats">
+      <div class="stat"><b>${todo.length}</b><span>À servir</span></div>
+      <div class="stat"><b>${done.length}</b><span>Servies</span></div>
+      <div class="stat"><b style="font-size:16px;line-height:1.75">${fmt(cashed)}</b><span>Encaissé sur ${fmt(expected)}</span></div>
+    </div>
+    <div class="tabs">
+      <button data-t="todo" class="${H.tab==="todo"?"on":""}">À servir</button>
+      <button data-t="prep" class="${H.tab==="prep"?"on":""}">À préparer</button>
+      <button data-t="done" class="${H.tab==="done"?"on":""}">Servies</button>
+    </div>
+    ${body}
+    <details class="card mt noprint"><summary style="font-weight:600">Saisie manuelle / options</summary>
+      <p style="font-size:13px;color:var(--mute)">Si la caméra ne fonctionne pas, collez ici le texte du code QR.</p>
+      <textarea id="manual" placeholder="ELT1|12|K7QF|p1.0x1"></textarea>
+      <button class="btn ghost mt" id="manualgo">Ajouter la commande</button>
+      <button class="btn ghost mt" id="clear" style="color:var(--bad)">Vider toutes les commandes (fin du trajet)</button>
+    </details>
+    <div class="foot">Les commandes restent enregistrées sur ce téléphone.</div>
+  </div>`;
+  app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ H.tab=b.dataset.t; renderHostess(); });
+  app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
+    const o=H.orders.find(x=>x.code===b.dataset.code && x.seat===+b.dataset.seat); if(!o) return;
+    const a=b.dataset.act;
+    if(a==="serve") o.served=!o.served;
+    if(a==="pay") o.paid=!o.paid;
+    if(a==="del"){
+      if(b.dataset.armed){ H.orders=H.orders.filter(x=>x!==o); }
+      else { b.dataset.armed="1"; b.textContent="Sûr ?"; b.style.width="70px"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent="✕"; b.style.width=""; } },2500); return; }
+    }
+    saveH(); renderHostess();
+  });
+  $("#manualgo").onclick=()=>{ handleScan($("#manual").value, true); };
+  const clr=$("#clear");
+  clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; saveH(); renderHostess(); toast("Commandes vidées"); } else { clr.dataset.armed="1"; clr.textContent="Touchez encore pour confirmer"; } };
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="scanbtn">📷 Scanner une commande</button></div>`;
+  $("#scanbtn").onclick=startScan;
+  if(H.last){ const el=document.getElementById("o-"+H.last); if(el){ el.classList.add("flash"); el.scrollIntoView({block:"center"}); } H.last=null; }
+}
+function orderCard(o){
+  const s=seatInfo(o.seat);
+  const time=new Date(o.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  return `<div class="ord ${o.served?"served":""}" id="o-${o.seat}-${o.code}">
+    <div class="oh"><div class="oseat">${o.seat}<small>${s.type.toUpperCase()}</small></div>
+      <div class="ometa"><b>${fmt(o.total)}</b>${o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">NON PAYÉ</span>`}<br>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</div></div>
+    <ul class="olist">${o.items.map(i=>`<li><span>${i.q} × ${esc(labelOf(i.id,i.vi))}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
+    ${o.note?`<div class="onote">📝 ${esc(o.note)}</div>`:""}
+    <div class="oact">
+      <button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.paid?"on":""}">${o.paid?"✓ Payé":"Marquer payé"}</button>
+      <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.served?"on":""}">${o.served?"✓ Servi":"Marquer servi"}</button>
+      <button data-act="del" data-code="${esc(o.code)}" data-seat="${o.seat}" class="del" aria-label="Supprimer">✕</button>
+    </div></div>`;
+}
+let lastScan={txt:"",t:0};
+function handleScan(txt, manual){
+  if(!manual && txt===lastScan.txt && Date.now()-lastScan.t<4000) return;
+  lastScan={txt,t:Date.now()};
+  const o=parsePayload(txt);
+  if(!o){ toast("Code non reconnu", true); return; }
+  if(o.seat>NSEATS) { /* accepté quand même */ }
+  const r=addOrder(o);
+  try{ navigator.vibrate && navigator.vibrate(r.dup?[40,60,40]:120); }catch(e){}
+  toast(r.dup?`Siège ${o.seat} déjà enregistré`:r.upd?`Siège ${o.seat} mis à jour · ${fmt(o.total)}`:`Siège ${o.seat} ajouté · ${fmt(o.total)}`, false);
+  H.last=o.seat+"-"+o.code; H.tab="todo";
+  $("#scanmsg").textContent = `Dernier : siège ${o.seat} (${fmt(o.total)}). Scannez le suivant ou terminez.`;
+  if(manual) renderHostess();
+}
+let stream=null, scanning=false, detector=null;
+async function startScan(){
+  const sc=$("#scan"), vid=$("#vid");
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width:{ideal:1280}}, audio:false});
+  }catch(e){ toast("Caméra indisponible : autorisez l'accès ou utilisez la saisie manuelle", true); return; }
+  vid.srcObject=stream; await vid.play().catch(()=>{});
+  sc.classList.add("on"); scanning=true;
+  $("#scanmsg").textContent="Placez le code QR du voyageur dans le cadre";
+  try{ if("BarcodeDetector" in window){ const f=await BarcodeDetector.getSupportedFormats(); if(f.includes("qr_code")) detector=new BarcodeDetector({formats:["qr_code"]}); } }catch(e){ detector=null; }
+  loop();
+}
+function stopScan(){
+  scanning=false; $("#scan").classList.remove("on");
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  renderHostess();
+}
+async function loop(){
+  if(!scanning) return;
+  const vid=$("#vid");
+  if(vid.readyState>=2){
+    try{
+      if(detector){
+        const r=await detector.detect(vid); if(r.length) handleScan(r[0].rawValue);
+      } else {
+        const cv=$("#cv"), w=640, h=Math.round(vid.videoHeight*w/vid.videoWidth)||480;
+        cv.width=w; cv.height=h; const ctx=cv.getContext("2d",{willReadFrequently:true});
+        ctx.drawImage(vid,0,0,w,h);
+        const img=ctx.getImageData(0,0,w,h);
+        const code=jsQR(img.data,w,h,{inversionAttempts:"dontInvert"});
+        if(code&&code.data) handleScan(code.data);
+      }
+    }catch(e){}
+  }
+  setTimeout(()=>requestAnimationFrame(loop), 120);
+}
+$("#scanclose").onclick=stopScan;
+
+/* =====================================================
+   ADMIN : planche de QR codes à coller au dos des sièges
+   ===================================================== */
+function renderAdmin(){
+  const base = store.get("elt_base", location.origin+location.pathname);
+  const n = NSEATS;
+  app.innerHTML = header(null, `<span class="seatchip">Admin</span>`) + `<div class="wrap">
+    <div class="noprint">
+      <h2>QR codes des sièges</h2>
+      <p class="lead">Chaque code ouvre le menu avec le siège déjà sélectionné. Imprimez, découpez et collez au dos du siège de devant.</p>
+      <div class="card">
+        <div class="field"><label>Nombre de sièges du bus</label><input id="n" type="number" min="4" max="120" value="${n}"></div>
+        <div class="field"><label>Adresse publique de l'application</label><input id="base" value="${esc(base)}"></div>
+        <button class="btn" id="gen">Mettre à jour</button>
+        <button class="btn amber mt" id="print">🖨 Imprimer la planche</button>
+      </div>
+    </div>
+    <div class="sheet" id="sheet"></div>
+  </div>`;
+  const build=()=>{
+    const N=Math.max(4,Math.min(120,parseInt($("#n").value)||SEATS_DEFAULT));
+    const b=$("#base").value.trim(); store.set("elt_base",b);
+    const sep=b.includes("?")?"&":"?";
+    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N,"M")}<div class="qf">Réservé au personnel</div></div>`;
+    for(let i=1;i<=N;i++){
+      const s=seatInfo(i);
+      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row}</div>${qrSvg(b+sep+"s="+i+"&n="+N,"M")}<div class="qf">Scannez pour commander · ${TAGLINE}</div></div>`;
+    }
+    $("#sheet").innerHTML=html;
+  };
+  $("#gen").onclick=()=>{ const N=parseInt($("#n").value)||SEATS_DEFAULT; const u=new URL(location.href); u.searchParams.set("n",N); history.replaceState(null,"",u); build(); };
+  $("#print").onclick=()=>window.print();
+  build();
+  bar.innerHTML="";
+}
+
+/* ============ ROUTAGE ============ */
+if(MODE==="hotesse"||MODE==="hostess") renderHostess();
+else if(MODE==="admin") renderAdmin();
+else renderTraveler();
+</script>
+</body>
+</html>
