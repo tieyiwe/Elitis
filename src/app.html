@@ -556,6 +556,7 @@ a.btn{text-decoration:none}
 .chips span.new{background:var(--amber);color:var(--navy);animation:pop2 .3s}
 .tally div[style]{color:rgba(255,255,255,.75)!important}
 .scan .msg{font-size:14px;opacity:.9}
+.cfg{padding:6px 14px;margin:12px 0 6px}.cfg label{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;font-weight:600;font-size:15px}.cfg label+label{border-top:1px solid var(--line)}.cfg input{width:55%;border:0;background:#f2f4f7;border-radius:10px;padding:9px 10px;font-size:16px;text-align:right}
 </style>
 </head>
 <body>
@@ -574,6 +575,7 @@ a.btn{text-decoration:none}
 </div>
 <canvas id="cv" hidden></canvas>
 
+<script src="config.js"></script>
 <script>/*LIBS*/</script>
 <script>
 "use strict";
@@ -614,7 +616,7 @@ const I18N = {
     tip:"Gardez cet écran ouvert. Quand l'hôtesse arrive à votre rangée, montrez-lui ce code : elle le scanne et reçoit votre commande. Pensez à augmenter la luminosité de votre écran.",
     edit:"Modifier ma commande", reset:"Nouvelle commande", orderN:"Commande", thanks:"Merci de voyager avec nous. La passion du voyage !",
     unknown:"Article inconnu",
-    soldOut:"Épuisé", unavail:"Indisponible aujourd'hui", special:"Spécialité", from:"dès", noSeat:"Aucun siège choisi", change:"Modifier",
+    removedSoldOut:"Un article de votre panier n'est plus disponible aujourd'hui, il a été retiré.", soldOut:"Épuisé", unavail:"Indisponible aujourd'hui", special:"Spécialité", from:"dès", noSeat:"Aucun siège choisi", change:"Modifier",
     hello:"Bon appétit 👋", heroTitle:"Que souhaitez-vous déguster\u00a0?", menu:"Menu",
     deliverTo:"Livraison à votre place", items:"Articles", subtotal:"Sous-total", payHostess:"Paiement à l'hôtesse, à la livraison",
     readyTitle:"Votre commande est prête", readySub:"Montrez ce code à l'hôtesse",
@@ -644,7 +646,7 @@ const I18N = {
     tip:"Keep this screen open. When the hostess reaches your row, show her this code: she scans it and receives your order. Turn up your screen brightness.",
     edit:"Edit my order", reset:"New order", orderN:"Order", thanks:"Thank you for travelling with us. The passion for travel!",
     unknown:"Unknown item",
-    soldOut:"Sold out", unavail:"Unavailable today", special:"Specialty", from:"from", noSeat:"No seat selected", change:"Change",
+    removedSoldOut:"An item in your cart is no longer available today and was removed.", soldOut:"Sold out", unavail:"Unavailable today", special:"Specialty", from:"from", noSeat:"No seat selected", change:"Change",
     hello:"Enjoy your meal 👋", heroTitle:"What would you like to eat?", menu:"Menu",
     deliverTo:"Delivered to your seat", items:"Items", subtotal:"Subtotal", payHostess:"Pay the hostess on delivery",
     readyTitle:"Your order is ready", readySub:"Show this code to the hostess",
@@ -749,6 +751,25 @@ function header(stepIdx, right){
   return `<header class="top"><div class="brand">${LOGO}<div class="bt"><h1>${COMPANY}</h1><small>${t("sub")} · ${t("tagline")}</small></div>${right||""}${langBtn()}</div></header>`;
 }
 
+/* ============ SYNCHRO EN LIGNE DU MENU DU JOUR (Supabase) ============
+   Remplir url + key (clé « anon / publishable » du projet Supabase) pour que le menu
+   confirmé par l'hôtesse s'applique automatiquement chez tous les voyageurs du bus.
+   Laisser vide : l'application fonctionne hors ligne (lien / QR « menu du jour » en secours). */
+const CLOUD = Object.assign({ url:"", key:"" }, window.ELT_CONFIG||{});
+const cloudOn = () => !!(CLOUD.url && CLOUD.key);
+const cloudHeaders = () => ({ apikey:CLOUD.key, Authorization:"Bearer "+CLOUD.key, "Content-Type":"application/json" });
+async function cloudGet(bus){
+  const r=await fetch(`${CLOUD.url}/rest/v1/dispo?bus=eq.${encodeURIComponent(bus)}&select=day,off,updated_at`,{headers:cloudHeaders(),cache:"no-store"});
+  if(!r.ok) throw new Error("net"); const j=await r.json(); return j[0]||null;
+}
+async function cloudSet(pin,bus,day,off){
+  const r=await fetch(`${CLOUD.url}/rest/v1/rpc/set_dispo`,{method:"POST",headers:cloudHeaders(),body:JSON.stringify({p_pin:pin,p_bus:bus,p_day:day,p_off:off})});
+  if(!r.ok){ const tx=await r.text().catch(()=>""); throw new Error(/pin/i.test(tx)?"pin":"net"); }
+}
+/* Numéro du bus : ?b=12 dans les liens (QR des sièges), sinon le dernier utilisé, sinon « 1 » */
+let BUS = (params.get("b") || store.get("elt_bus","1") || "1").toString().replace(/[^\w-]/g,"").slice(0,20) || "1";
+if(params.get("b")) store.set("elt_bus", BUS);
+
 /* ============ CONFETTIS ============ */
 function confetti(opts){
   try{ if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return; }catch(e){}
@@ -799,6 +820,21 @@ if(!MODE){
   if(d===today()) store.set("elt_off",{d, off: off? off.split(",").filter(k=>/^[a-z0-9]+\.\d+$/i.test(k)) : []});
   const so=store.get("elt_off",null); if(so && so.d===today()) DAY_OFF=new Set(so.off);
   if(DAY_OFF.size){ let ch=false; Object.keys(T.cart).forEach(k=>{ if(DAY_OFF.has(k)){ delete T.cart[k]; ch=true; } }); if(ch) saveT(); }
+}
+function purgeOffFromCart(){ let ch=false; Object.keys(T.cart).forEach(k=>{ if(DAY_OFF.has(k)){ delete T.cart[k]; ch=true; } }); if(ch){ saveT(); } return ch; }
+async function syncDispoTraveler(){
+  if(MODE || !cloudOn()) return;
+  try{
+    const row=await cloudGet(BUS);
+    const next = (row && row.day===today()) ? (row.off||[]) : [];
+    const same = next.length===DAY_OFF.size && next.every(k=>DAY_OFF.has(k));
+    store.set("elt_off",{d:today(), off:next, cloud:1});
+    if(same) return;
+    DAY_OFF=new Set(next);
+    const removed=purgeOffFromCart();
+    if(T.view==="menu"||T.view==="cart") rerenderKeepScroll();
+    if(removed) toast(t("removedSoldOut"));
+  }catch(e){ /* hors ligne : on garde le dernier menu connu */ }
 }
 const urlSeat = parseInt(params.get("s"));
 /* Siège verrouillé : le voyageur est arrivé par le QR code collé au dos de son siège */
@@ -1096,7 +1132,13 @@ H.dispo = store.get("elt_dispo", null);
 const dispoOK = () => !!(H.dispo && H.dispo.date===today());
 if(dispoOK()) DAY_OFF = new Set(H.dispo.off||[]);
 function allKeys(m){ return variants(m).map((_,i)=>m.id+"."+i); }
-function dispoLink(){ const off=[...DAY_OFF]; return location.origin+location.pathname+"?d="+today()+(off.length?"&off="+off.join(","):""); }
+function dispoLink(){ const off=[...DAY_OFF]; return location.origin+location.pathname+"?b="+encodeURIComponent(BUS)+"&d="+today()+(off.length?"&off="+off.join(","):""); }
+async function publishDispo(silent){
+  if(!cloudOn() || !H.dispo || H.dispo.date!==today()) return "off";
+  const pin=store.get("elt_pin","");
+  try{ await cloudSet(pin, BUS, H.dispo.date, H.dispo.off||[]); H.dispo.synced=true; H.dispo.bus=BUS; store.set("elt_dispo",H.dispo); return "ok"; }
+  catch(e){ H.dispo.synced=false; store.set("elt_dispo",H.dispo); return e.message==="pin"?"pin":"net"; }
+}
 function renderDispo(){
   window.onscroll=null;
   if(!H.draft) H.draft = new Set(dispoOK()? (H.dispo.off||[]) : (H.dispo&&H.dispo.off||[]));
@@ -1111,18 +1153,29 @@ function renderDispo(){
     <div class="navrow"><button class="back" id="back">‹ Commandes</button></div>
     <h2 class="lt">Menu du jour</h2>
     <p class="lead">${new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}. Désactivez les articles qui ne sont pas disponibles aujourd'hui, puis confirmez avant le départ.</p>
+    ${cloudOn()?`<div class="group cfg"><label>🚌 Bus n°<input id="busn" value="${esc(BUS)}" inputmode="text" maxlength="20"></label><label>🔑 PIN hôtesse<input id="pin" type="password" value="${esc(store.get("elt_pin",""))}" autocomplete="off" placeholder="Code PIN"></label></div><p class="hnote">Le menu confirmé sera publié pour tous les voyageurs du bus ${esc(BUS)}.</p>`:`<p class="hnote">Mode hors ligne : partagez le lien « menu du jour » après confirmation.</p>`}
     <div class="dtools"><button class="chipbtn" id="allon">Tout disponible</button><span>${MENU.length} articles · <b>${nOff}</b> option${nOff>1?"s":""} indisponible${nOff>1?"s":""}</span></div>
     ${rows}
   </div>`;
   app.querySelectorAll("[data-di]").forEach(b=>b.onclick=()=>{ haptic(8); const m=BY_ID[b.dataset.di], ks=allKeys(m), anyOn=ks.some(k=>!D.has(k)); ks.forEach(k=> anyOn?D.add(k):D.delete(k)); const y=scrollY; renderDispo(); scrollTo(0,y); });
   app.querySelectorAll("[data-dk]").forEach(b=>b.onclick=()=>{ haptic(8); const k=b.dataset.dk; D.has(k)?D.delete(k):D.add(k); const y=scrollY; renderDispo(); scrollTo(0,y); });
   $("#allon").onclick=()=>{ D.clear(); const y=scrollY; renderDispo(); scrollTo(0,y); };
+  const bn=$("#busn"), pn=$("#pin");
+  if(bn) bn.onchange=()=>{ BUS=(bn.value||"1").replace(/[^\w-]/g,"").slice(0,20)||"1"; store.set("elt_bus",BUS); H.cloudLoaded=false; H.draft=null; renderDispo(); };
+  if(pn) pn.oninput=()=>store.set("elt_pin",pn.value.trim());
+  if(cloudOn() && !H.cloudLoaded){ H.cloudLoaded=true; cloudGet(BUS).then(row=>{ if(row && row.day===today() && H.tab==="dispo"){ H.draft=new Set(row.off||[]); const y=scrollY; renderDispo(); scrollTo(0,y); toast("Menu du jour déjà publié aujourd'hui, chargé ✓"); } }).catch(()=>{}); }
   $("#back").onclick=()=>{ H.draft=null; H.tab="todo"; renderHostess(); };
   bar.innerHTML = `<div class="in"><button class="cartbar show amber" id="dok"><span class="cl">✓ Confirmer le menu du jour</span><span class="sp">${nOff?nOff+" indispo.":"Tout dispo"}</span></button></div>`;
-  $("#dok").onclick=()=>{
+  $("#dok").onclick=async()=>{
     haptic(15);
-    H.dispo={date:today(), off:[...D], t:Date.now()}; store.set("elt_dispo",H.dispo); DAY_OFF=new Set(D); H.draft=null;
-    toast("Menu du jour confirmé ✓"); H.tab="share"; renderHostess();
+    if(cloudOn() && !store.get("elt_pin","")){ toast("Entrez le code PIN hôtesse", true); $("#pin").focus(); return; }
+    const btn=$("#dok"); btn.disabled=true; btn.querySelector(".cl").textContent= cloudOn()?"Publication…":"Confirmation…";
+    H.dispo={date:today(), off:[...D], t:Date.now(), bus:BUS}; store.set("elt_dispo",H.dispo); DAY_OFF=new Set(D);
+    const res=await publishDispo();
+    if(res==="pin"){ btn.disabled=false; btn.querySelector(".cl").textContent="✓ Confirmer le menu du jour"; H.dispo=null; store.set("elt_dispo",null); DAY_OFF=new Set(); toast("Code PIN incorrect", true); return; }
+    H.draft=null;
+    toast(res==="ok" ? `Menu publié ✓ Bus ${BUS}, tous les voyageurs` : res==="net" ? "Confirmé sur ce téléphone. Publication dès le retour du réseau." : "Menu du jour confirmé ✓", res==="net");
+    H.tab="share"; renderHostess();
   };
 }
 function renderShare(){
@@ -1136,7 +1189,7 @@ function renderShare(){
     <div class="glabel">Menu du jour pour les voyageurs</div>
     <div class="group" style="text-align:center;padding:16px">
       <div style="max-width:220px;margin:0 auto">${qrSvg(link,"M")}</div>
-      <p style="font-size:13px;color:var(--mute);margin:10px 0 0">Les voyageurs qui ouvrent ce lien ou scannent ce code voient les articles épuisés grisés. Les commandes contenant un article épuisé sont signalées au scan.</p>
+      <p style="font-size:13px;color:var(--mute);margin:10px 0 0">${cloudOn() ? (H.dispo.synced ? `<b style="color:var(--ok)">✓ Publié en ligne pour le bus ${esc(H.dispo.bus||BUS)}.</b> Les voyageurs voient ce menu automatiquement (mise à jour chaque minute). Ce lien sert seulement de secours.` : `<b style="color:var(--amber-d)">⏳ Pas encore publié en ligne (réseau).</b> Nouvel essai automatique. En attendant, partagez ce lien.`) : "Les voyageurs qui ouvrent ce lien ou scannent ce code voient les articles épuisés grisés."} Les commandes contenant un article épuisé sont signalées au scan.</p>
     </div>
     <div class="actions mt"><a class="btn ghost" id="wa" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost" id="copy">Copier le lien</button></div>
     <button class="btn mt" id="go2">Aller aux commandes ›</button>
@@ -1149,8 +1202,8 @@ function renderShare(){
 }
 function dispoBanner(){
   if(!dispoOK()) return `<button class="dban need" id="dban"><span class="di">⚠️</span><span class="dt"><b>Menu du jour non confirmé</b><small>Vérifiez les articles disponibles avant le départ</small></span><span class="sa">›</span></button>`;
-  const n=DAY_OFF.size;
-  return `<button class="dban" id="dban"><span class="di">✅</span><span class="dt"><b>Menu du jour confirmé</b><small>${new Date(H.dispo.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} · ${n?n+" option(s) épuisée(s)":"tout disponible"} · QR voyageurs</small></span><span class="sa">›</span></button>`;
+  const n=DAY_OFF.size, sync = !cloudOn() ? "QR voyageurs" : H.dispo.synced ? `Publié bus ${esc(H.dispo.bus||BUS)} ✓` : "⏳ Publication en attente";
+  return `<button class="dban" id="dban"><span class="di">✅</span><span class="dt"><b>Menu du jour confirmé</b><small>${new Date(H.dispo.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} · ${n?n+" épuisé(s)":"tout disponible"} · ${sync}</small></span><span class="sa">›</span></button>`;
 }
 const offMark = i => DAY_OFF.has(i.id+"."+i.vi) ? ` <span class="badge unpaid">ÉPUISÉ</span>` : "";
 function saveH(){ store.set("elt_orders", H.orders); }
@@ -1183,6 +1236,7 @@ function addOrder(o){
   H.orders.push(rec); saveH(); return {o:rec, conflict:other};
 }
 function renderHostess(){
+  if(cloudOn() && dispoOK() && H.dispo.synced===false && !H.retrying){ H.retrying=true; publishDispo().then(r=>{ H.retrying=false; if(r==="ok"){ toast("Menu du jour publié ✓"); if(H.tab!=="dispo") renderHostess(); } }); }
   if(H.tab==="dispo") return renderDispo();
   if(H.tab==="share") return renderShare();
   window.onscroll=null;
@@ -1367,6 +1421,7 @@ function renderAdmin(){
       <h2>QR codes des sièges</h2>
       <p class="lead">Chaque code ouvre le menu avec le siège déjà sélectionné. Imprimez, découpez et collez au dos du siège de devant.</p>
       <div class="card">
+        <div class="field"><label>Numéro du bus (pour le menu du jour)</label><input id="bus" value="${esc(BUS)}" maxlength="20"></div>
         <div class="field"><label>Nombre de sièges du bus</label><input id="n" type="number" min="4" max="120" value="${n}"></div>
         <div class="field"><label>Adresse publique de l'application</label><input id="base" value="${esc(base)}"></div>
         <button class="btn" id="gen">Mettre à jour</button>
@@ -1379,10 +1434,11 @@ function renderAdmin(){
     const N=Math.max(4,Math.min(120,parseInt($("#n").value)||SEATS_DEFAULT));
     const b=$("#base").value.trim(); store.set("elt_base",b);
     const sep=b.includes("?")?"&":"?";
-    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N,"M")}<div class="qf">Réservé au personnel</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
+    BUS=($("#bus").value||"1").replace(/[^\w-]/g,"").slice(0,20)||"1"; store.set("elt_bus",BUS); const bq="&b="+encodeURIComponent(BUS);
+    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N+bq,"M")}<div class="qf">Réservé au personnel</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     for(let i=1;i<=N;i++){
       const s=seatInfo(i);
-      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row}</div>${qrSvg(b+sep+"s="+i+"&n="+N,"M")}<div class="qf">Scannez pour commander · Scan to order</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
+      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row} · Bus ${esc(BUS)}</div>${qrSvg(b+sep+"s="+i+"&n="+N+bq,"M")}<div class="qf">Scannez pour commander · Scan to order</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     }
     $("#sheet").innerHTML=html;
   };
@@ -1395,7 +1451,10 @@ function renderAdmin(){
 /* ============ ROUTAGE ============ */
 if(MODE==="hotesse"||MODE==="hostess") renderHostess();
 else if(MODE==="admin") renderAdmin();
-else { if(welcomeNeeded()){ renderTraveler(); showWelcome(); } else renderTraveler(); }
+else {
+  if(welcomeNeeded()){ renderTraveler(); showWelcome(); } else renderTraveler();
+  if(cloudOn()){ syncDispoTraveler(); setInterval(syncDispoTraveler, 60000); document.addEventListener("visibilitychange",()=>{ if(!document.hidden) syncDispoTraveler(); }); }
+}
 </script>
 </body>
 </html>

@@ -31,6 +31,20 @@ Travelers can browse the menu freely. The first time they tap "+", a seat picker
 
 Once items are in the cart, a **Hôtesse** QR button sits next to the cart bar, and the order screen's main button is **Montrer à l'hôtesse**. It opens the selection with its QR code (seat required). **Afficher en grand** (or tapping the QR) shows a full-screen white QR for easy scanning, and the screen is kept awake where supported.
 
+## Menu du jour synced to all travelers (Supabase)
+
+When configured, the menu confirmed by the hostess is published online and applies automatically to every traveler of that bus (loaded on open, refreshed every minute and when the phone wakes). Sold-out items already in a cart are removed with a message.
+
+**One-time setup (about 10 minutes, free plan):**
+1. Create a project on supabase.com.
+2. SQL Editor > New query > paste `supabase.sql` > Run.
+3. Set the hostess PIN: `update public.app_secrets set v = 'YOUR-PIN' where k = 'hostess_pin';`
+4. Project Settings > API: copy the Project URL and the anon / publishable key into `config.js` (edit it directly on GitHub). No rebuild needed.
+
+**Bus number:** each bus has a number (`?b=12` in links). The admin page puts it in every seat QR code and the hostess QR code. The hostess sees it (and the PIN field) on the Menu du jour screen. Each bus has its own menu du jour.
+
+Without `config.js` values, the app works offline as before (shareable link / QR fallback).
+
 ## Menu du jour (daily availability)
 
 - Each day, before the first scan, the hostess must confirm the "Menu du jour" (switches per item and per size/option). Scanning is blocked until it is confirmed.
