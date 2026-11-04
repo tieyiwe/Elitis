@@ -152,6 +152,25 @@ label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
 .scan .frame{position:absolute;left:50%;top:45%;width:70vw;max-width:320px;aspect-ratio:1;transform:translate(-50%,-50%);border:3px solid var(--amber);border-radius:20px;box-shadow:0 0 0 2000px rgba(0,0,0,.45)}
 .scan .sbar{position:absolute;left:0;right:0;bottom:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
 .scan .msg{color:#fff;text-align:center;font-weight:600;text-shadow:0 1px 3px #000}
+.tally{background:rgba(255,255,255,.95);border-radius:14px;padding:10px 12px;color:var(--ink)}
+.tally .tt{display:flex;justify-content:space-between;align-items:baseline;font-weight:700}
+.tally .tt b{font-size:22px;color:var(--navy)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;max-height:64px;overflow:auto}
+.chips span{background:var(--navy);color:#fff;border-radius:7px;padding:2px 7px;font-size:12px;font-weight:700}
+.chips span.new{background:var(--amber);color:var(--navy)}
+.rhead{background:var(--navy);color:#fff;border-radius:var(--r);padding:14px;margin-bottom:12px}
+.rhead b{font-size:22px;color:var(--amber)}
+.rhead small{opacity:.8}
+.dl{list-style:none;margin:0;padding:0}
+.dl li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.dl li:last-child{border-bottom:0}
+.dl .sn{background:var(--navy);color:#fff;border-radius:8px;min-width:40px;text-align:center;font-weight:800;padding:4px 0;font-size:15px}
+.dl .sn small{display:block;font-size:8px;font-weight:600;opacity:.8}
+.dl .it{flex:1;font-size:13.5px}
+.dl .it em{font-style:normal;color:var(--mute);font-size:12px}
+.dl .am{text-align:right;font-weight:700;font-size:13px;white-space:nowrap}
+.prep.big li{font-size:16px}
+.tabs button{font-size:13px;padding:9px 4px}
 .toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-150%);background:var(--ok);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:60;transition:transform .25s;max-width:90vw;text-align:center}
 .toast.on{transform:translate(-50%,0)}
 .toast.err{background:var(--bad)}
@@ -184,8 +203,9 @@ label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
   <video id="vid" playsinline muted></video>
   <div class="frame"></div>
   <div class="sbar">
+    <div class="tally" id="tally"></div>
     <div class="msg" id="scanmsg">Placez le code QR du voyageur dans le cadre</div>
-    <button class="btn amber" id="scanclose">Terminer le scan</button>
+    <button class="btn amber" id="scanclose">Terminer la tournée</button>
   </div>
 </div>
 <canvas id="cv" hidden></canvas>
@@ -452,7 +472,12 @@ function viewQR(){
 /* =====================================================
    HÔTESSE
    ===================================================== */
-const H = { orders: store.get("elt_orders", []), tab:"todo", last:null };
+const H = { orders: store.get("elt_orders", []), round: store.get("elt_round", null), tab:"todo", last:null };
+function saveRound(){ store.set("elt_round", H.round); }
+const okey = o => o.seat+"-"+o.code;
+function roundOrders(){ if(!H.round) return []; return H.round.keys.map(k=>H.orders.find(o=>okey(o)===k)).filter(Boolean).sort((a,b)=>a.seat-b.seat); }
+function aggItems(list){ const agg={}; list.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; })); return Object.keys(agg).sort((a,b)=>agg[b]-agg[a]).map(k=>{const [id,vi]=k.split("."); return {label:labelOf(id,+vi), q:agg[k]};}); }
+function beep(ok){ try{ const A=window.AudioContext||window.webkitAudioContext; if(!A) return; beep.ctx=beep.ctx||new A(); const c=beep.ctx,o=c.createOscillator(),g=c.createGain(); o.frequency.value=ok?880:300; g.gain.value=.12; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+(ok?.12:.25)); }catch(e){} }
 function saveH(){ store.set("elt_orders", H.orders); }
 function parsePayload(txt){
   txt = String(txt||"").trim();
@@ -487,7 +512,21 @@ function renderHostess(){
   const expected = H.orders.reduce((a,o)=>a+o.total,0);
   const shown = H.tab==="todo"?todo : H.tab==="done"?done : null;
   let body;
-  if(H.tab==="prep"){
+  if(H.tab==="round"){
+    const ro=roundOrders();
+    if(!ro.length){ body=`<div class="empty">Aucune tournée en cours.<br>Touchez « Scanner » pour commencer une tournée.</div>`; }
+    else {
+      const tot=ro.reduce((a,o)=>a+o.total,0), unpaid=ro.filter(o=>!o.paid).reduce((a,o)=>a+o.total,0);
+      const tm=new Date(H.round.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+      body = `<div class="rhead"><small>Tournée de ${tm}</small><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><span><b>${ro.length}</b> commande${ro.length>1?"s":""}</span><span style="font-weight:700">${fmt(tot)}</span></div><small>À encaisser : ${fmt(unpaid)}</small></div>
+      <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:6px 0 8px">1. À préparer au poste</h3>
+      <div class="card"><ul class="prep big">${aggItems(ro).map(a=>`<li><span>${esc(a.label)}</span><b>× ${a.q}</b></li>`).join("")}</ul></div>
+      <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:16px 0 8px">2. À livrer, dans l'ordre des sièges</h3>
+      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      <button class="btn ghost mt" id="resume">📷 Ajouter des commandes à cette tournée</button>
+      <button class="btn mt" id="allserved">✓ Toute la tournée servie</button>`;
+    }
+  } else if(H.tab==="prep"){
     const agg={};
     todo.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; }));
     const ks=Object.keys(agg).sort((a,b)=>agg[b]-agg[a]);
@@ -502,6 +541,7 @@ function renderHostess(){
       <div class="stat"><b style="font-size:16px;line-height:1.75">${fmt(cashed)}</b><span>Encaissé sur ${fmt(expected)}</span></div>
     </div>
     <div class="tabs">
+      <button data-t="round" class="${H.tab==="round"?"on":""}">Tournée</button>
       <button data-t="todo" class="${H.tab==="todo"?"on":""}">À servir</button>
       <button data-t="prep" class="${H.tab==="prep"?"on":""}">À préparer</button>
       <button data-t="done" class="${H.tab==="done"?"on":""}">Servies</button>
@@ -527,11 +567,13 @@ function renderHostess(){
     }
     saveH(); renderHostess();
   });
+  const rs=$("#resume"); if(rs) rs.onclick=()=>startScan(true);
+  const as=$("#allserved"); if(as) as.onclick=()=>{ roundOrders().forEach(o=>o.served=true); saveH(); toast("Tournée marquée servie"); renderHostess(); };
   $("#manualgo").onclick=()=>{ handleScan($("#manual").value, true); };
   const clr=$("#clear");
-  clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; saveH(); renderHostess(); toast("Commandes vidées"); } else { clr.dataset.armed="1"; clr.textContent="Touchez encore pour confirmer"; } };
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="scanbtn">📷 Scanner une commande</button></div>`;
-  $("#scanbtn").onclick=startScan;
+  clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; H.round=null; saveRound(); saveH(); renderHostess(); toast("Commandes vidées"); } else { clr.dataset.armed="1"; clr.textContent="Touchez encore pour confirmer"; } };
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="scanbtn">📷 Nouvelle tournée de scan</button></div>`;
+  $("#scanbtn").onclick=()=>startScan(false);
   if(H.last){ const el=document.getElementById("o-"+H.last); if(el){ el.classList.add("flash"); el.scrollIntoView({block:"center"}); } H.last=null; }
 }
 function orderCard(o){
@@ -553,18 +595,32 @@ function handleScan(txt, manual){
   if(!manual && txt===lastScan.txt && Date.now()-lastScan.t<4000) return;
   lastScan={txt,t:Date.now()};
   const o=parsePayload(txt);
-  if(!o){ toast("Code non reconnu", true); return; }
+  if(!o){ beep(false); toast("Code non reconnu", true); return; }
   if(o.seat>NSEATS) { /* accepté quand même */ }
   const r=addOrder(o);
   try{ navigator.vibrate && navigator.vibrate(r.dup?[40,60,40]:120); }catch(e){}
   toast(r.dup?`Siège ${o.seat} déjà enregistré`:r.upd?`Siège ${o.seat} mis à jour · ${fmt(o.total)}`:`Siège ${o.seat} ajouté · ${fmt(o.total)}`, false);
-  H.last=o.seat+"-"+o.code; H.tab="todo";
-  $("#scanmsg").textContent = `Dernier : siège ${o.seat} (${fmt(o.total)}). Scannez le suivant ou terminez.`;
+  beep(true);
+  const key=okey(o);
+  if(!H.round) H.round={t:Date.now(), keys:[]};
+  if(!H.round.keys.includes(key)){ H.round.keys.push(key); }
+  saveRound();
+  H.last=key; H.lastNew=key; H.tab="round";
+  $("#scanmsg").textContent = r.dup ? `Siège ${o.seat} déjà scanné. Passez au voyageur suivant.` : `Siège ${o.seat} ajouté. Passez au voyageur suivant ou terminez la tournée.`;
+  renderTally();
   if(manual) renderHostess();
 }
 let stream=null, scanning=false, detector=null;
-async function startScan(){
+function renderTally(){
+  const ro=roundOrders(), tot=ro.reduce((a,o)=>a+o.total,0);
+  $("#tally").innerHTML = `<div class="tt"><span><b>${ro.length}</b> commande${ro.length>1?"s":""} scannée${ro.length>1?"s":""}</span><span>${fmt(tot)}</span></div>` +
+    (ro.length?`<div class="chips">${ro.map(o=>`<span class="${okey(o)===H.lastNew?"new":""}">${o.seat}</span>`).join("")}</div>`:`<div style="font-size:12px;color:var(--mute);margin-top:4px">Scannez les voyageurs les uns après les autres, la caméra reste ouverte.</div>`);
+}
+async function startScan(resume){
   const sc=$("#scan"), vid=$("#vid");
+  beep.ctx = beep.ctx || (()=>{ try{ const A=window.AudioContext||window.webkitAudioContext; return A?new A():null; }catch(e){ return null; } })();
+  if(!resume || !H.round){ H.round={t:Date.now(), keys:[]}; saveRound(); }
+  H.lastNew=null; renderTally();
   try{
     stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width:{ideal:1280}}, audio:false});
   }catch(e){ toast("Caméra indisponible : autorisez l'accès ou utilisez la saisie manuelle", true); return; }
@@ -577,6 +633,7 @@ async function startScan(){
 function stopScan(){
   scanning=false; $("#scan").classList.remove("on");
   if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  H.tab = roundOrders().length ? "round" : "todo"; H.last=null;
   renderHostess();
 }
 async function loop(){

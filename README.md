@@ -12,7 +12,7 @@ No login, no server, no database. The order is stored inside the QR code itself,
 |---|---|---|
 | Traveler, seat preselected | `BASE/?s=12` | Printed on each seat back |
 | Traveler, choose seat | `BASE/` | Generic QR code (station, ticket) |
-| Hostess | `BASE/?mode=hotesse` | Scan orders, "à servir / à préparer / servies", paid/served, cash total |
+| Hostess | `BASE/?mode=hotesse` | Scan rounds ("tournées"): scan many travelers in a row, then get the station summary (what to prepare + what to deliver per seat). Also "à servir / à préparer / servies", paid/served, cash total |
 | Admin | `BASE/?mode=admin` | Print the sheet of seat QR codes + hostess QR code |
 
 Add `&n=54` to any link to set the number of seats (default 54).
