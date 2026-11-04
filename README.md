@@ -23,6 +23,17 @@ Add `&n=54` to any link to set the number of seats (default 54).
 - French by default, English with the FR/EN button (or `?lang=en` in the link). Hostess and admin screens stay in French.
 - "Propulsé par TIBLOGICS / Powered by TIBLOGICS" on every screen. Add `tiblogics-logo.png` at the root to show the logo instead of the wordmark.
 
+## Seat selection
+
+Travelers can browse the menu freely. The first time they tap "+", a seat picker opens (bottom sheet, 60 seats by default, window/aisle filter). Nothing is added until a seat is confirmed. Travelers arriving from a seat-back QR code (`?s=12`) skip this step.
+
+## Menu du jour (daily availability)
+
+- Each day, before the first scan, the hostess must confirm the "Menu du jour" (switches per item and per size/option). Scanning is blocked until it is confirmed.
+- After confirming, she gets a link and QR code (`?d=YYYY-MM-DD&off=...`) to share (WhatsApp, copy). Travelers who open it see sold-out items greyed out ("Épuisé").
+- Any order containing a sold-out item is flagged when scanned and in the round summary.
+- Automatic sync to every traveler's phone needs the online database (full version).
+
 ## One traveler per seat
 
 - **Seat-back QR code locks the seat:** a traveler arriving with `?s=12` cannot switch to another seat.

@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#0f2340">
 <title>Elitis Express · Menu à bord</title>
 <style>
@@ -229,7 +232,208 @@ label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
 .tib{font-weight:800;letter-spacing:1.6px;font-size:12px;color:var(--navy)}
 .conf{background:#fdecea;color:#9b1c14;border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px;font-weight:600}
 .brand h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+.sheetbg{position:fixed;inset:0;z-index:65;background:rgba(8,20,38,.55);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s both}
+.sheetbg.closing{animation:fade .25s reverse both}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;animation:up .3s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.sheetbg.closing .sheet{animation:up .25s reverse both}
+.shead{display:flex;gap:10px;align-items:flex-start;padding:18px 16px 6px}
+.shead h2{margin:0}
+.shead .lead{margin:4px 0 0}
+.sx{flex:none;width:36px;height:36px;border-radius:50%;background:#e6eaf1;font-weight:700}
+.sbodyx{overflow:auto;padding:8px 16px 16px;flex:1}
+.sfootx{padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#fff;border-radius:0}
+.seatchip.need{background:var(--amber);color:var(--navy)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
 .qpw{font-size:8px;color:#777;margin-top:2px;letter-spacing:.5px}
+
+/* ================= PREMIUM / NATIVE MOBILE LAYER ================= */
+:root{--bg:#f2f3f7;--ink:#101828;--mute:#667085;--line:#eaecf0;--r:18px;
+  --sh1:0 1px 2px rgba(16,24,40,.05);--sh2:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.07);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overscroll-behavior-y:none}
+button,a{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible{outline:3px solid rgba(245,165,36,.6);outline-offset:2px}
+.app{padding-bottom:120px}
+/* header */
+header.top{padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:rgba(15,35,64,.94);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px)}
+.brand{gap:10px}
+.brand .logo{height:34px;min-width:34px;border-radius:10px}
+.brand .logo.txt{font-size:17px}
+.brand .bt{min-width:0;flex:1}
+.brand h1{font-size:16px;letter-spacing:-.2px;font-weight:700}
+.brand small{font-size:11.5px;opacity:.7}
+.langbtn{margin-left:auto!important;background:rgba(255,255,255,.1)}
+.langbtn b{font-size:11px;padding:5px 8px;letter-spacing:.3px}
+/* hero */
+.hero{background:linear-gradient(180deg,rgba(15,35,64,.94) 0%,var(--navy2) 100%);color:#fff;padding:6px 16px 18px;border-radius:0 0 26px 26px;margin-bottom:4px}
+.hero .hk{font-size:14px;opacity:.75}
+.hero .ht{font-size:25px;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin:2px 0 14px}
+.seatpill{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:16px;padding:11px 14px;transition:transform .12s}
+.seatpill:active{transform:scale(.98)}
+.seatpill .si{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:19px;flex:none}
+.seatpill .st{flex:1;min-width:0}
+.seatpill small{display:block;font-size:12px;opacity:.75}
+.seatpill b{font-size:16px}
+.seatpill .sa{font-size:13px;font-weight:700;color:var(--amber)}
+.seatpill.need{background:var(--amber);border-color:var(--amber);color:var(--navy)}
+.seatpill.need .si{background:rgba(15,35,64,.1)}
+.seatpill.need small{opacity:.7}
+.seatpill.need .sa{color:var(--navy);font-size:22px}
+.wrap .seatpill{background:#fff;color:var(--ink);border:0;box-shadow:var(--sh1)}
+.wrap .seatpill .si{background:#f2f4f7}
+.wrap .seatpill .sa{color:var(--amber-d)}
+.wrap .seatpill.need{background:var(--amber);color:var(--navy)}
+/* categories */
+.cats{gap:8px;padding:10px 16px;background:rgba(242,243,247,.88);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);transition:box-shadow .2s}
+.cats.stuck{box-shadow:0 1px 0 var(--line)}
+.cats button{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:0;background:#fff;box-shadow:var(--sh1);font-size:14px;color:var(--ink);border-radius:999px;transition:background .2s,color .2s,transform .12s}
+.cats button:active{transform:scale(.95)}
+.cats button span{font-size:15px}
+.cats button.on{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(15,35,64,.25)}
+/* list */
+.sec{padding:0 16px}
+.sec h3{font-size:20px;text-transform:none;letter-spacing:-.3px;color:var(--ink);font-weight:800;margin:20px 2px 10px}
+.list{background:#fff;border-radius:var(--r);box-shadow:var(--sh2);overflow:hidden}
+.item{background:none;border-radius:0;box-shadow:none;padding:14px;margin:0;position:relative;transition:background .2s}
+.item+.item{border-top:1px solid var(--line)}
+.item.has{outline:0;background:linear-gradient(90deg,rgba(245,165,36,.09),rgba(245,165,36,0) 70%)}
+.item.has:before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--amber)}
+.irow{display:flex;gap:12px;align-items:center}
+.thumb{width:58px;height:58px;border-radius:16px;flex:none;display:grid;place-items:center;font-size:30px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+.thumb.sm{width:42px;height:42px;border-radius:12px;font-size:22px}
+.c-poulet{background:linear-gradient(135deg,#fff1dc,#ffe0b3)}
+.c-grill{background:linear-gradient(135deg,#ffe4dc,#ffc9b8)}
+.c-snack{background:linear-gradient(135deg,#e9f6e4,#cfeac4)}
+.c-pizza{background:linear-gradient(135deg,#fff3c9,#ffe28a)}
+.c-acc{background:linear-gradient(135deg,#e6efff,#cddcff)}
+.ib{flex:1;min-width:0}
+.iname{font-weight:650;font-size:16px;letter-spacing:-.2px;line-height:1.25}
+.idesc{font-size:13px;color:var(--mute);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.iprice{font-weight:700;color:var(--ink);margin-top:5px;font-size:15px}
+.iprice small{font-weight:500;color:var(--mute);font-size:12px}
+.spec{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#9a5b00;background:#fff1d6;border-radius:6px;padding:2px 6px;margin-bottom:3px}
+.ia{flex:none}
+.opts{margin:10px 0 0 70px;border-radius:12px;background:#f7f8fa;overflow:hidden}
+.opt{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px}
+.opt+.opt{border-top:1px solid var(--line)}
+.opt .ol{flex:1;font-size:14.5px;font-weight:550}
+.opt .op{font-size:14px;font-weight:700;color:var(--ink)}
+.opt.on .ol{color:var(--amber-d)}
+/* stepper */
+.step{background:var(--navy);border-radius:999px;gap:0;box-shadow:0 4px 12px rgba(15,35,64,.22);animation:pop2 .18s ease-out}
+.step button{width:34px;height:34px;color:#fff;font-size:19px;font-weight:600;background:none!important;transition:transform .1s}
+.step button:active{transform:scale(.85)}
+.step span{color:#fff;min-width:18px;font-size:15px}
+.step.zero{background:none;box-shadow:none;animation:none}
+.step.zero .plus{width:36px;height:36px;background:#fff!important;color:var(--navy);border:1.5px solid #d0d5dd;box-shadow:var(--sh1);font-size:21px}
+.step.zero .plus:active{background:var(--navy)!important;color:#fff}
+@keyframes pop2{from{transform:scale(.85);opacity:.4}to{transform:none;opacity:1}}
+/* floating cart bar */
+.bar{background:none;padding:10px 14px calc(12px + env(safe-area-inset-bottom));pointer-events:none}
+.bar .in{pointer-events:auto}
+.cartbar{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px 12px 12px;border-radius:20px;background:rgba(15,35,64,.96);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);color:#fff;font-weight:700;font-size:16px;box-shadow:0 12px 30px rgba(15,35,64,.35);transition:transform .12s}
+.cartbar:active{transform:scale(.98)}
+.cartbar.enter{animation:slideup .35s cubic-bezier(.2,.9,.25,1.2) both}
+.cartbar.bump .cnt{animation:bump .3s}
+.cartbar .cnt{background:var(--amber);color:var(--navy);border-radius:10px;min-width:30px;height:30px;display:grid;place-items:center;font-size:15px;padding:0 8px}
+.cartbar .cl{flex:1;text-align:left}
+.cartbar .sp{font-weight:700}
+.cartbar .chev{font-size:22px;opacity:.6;margin-left:-4px}
+.cartbar.amber{background:var(--amber);color:var(--navy);box-shadow:0 12px 30px rgba(245,165,36,.4);justify-content:center;padding:16px 18px}
+.cartbar.amber .chev{opacity:.5}
+@keyframes slideup{from{transform:translateY(120%)}to{transform:none}}
+@keyframes bump{50%{transform:scale(1.25)}}
+/* generic */
+.wrap{padding:12px 16px}
+.navrow{margin:0 -4px 2px}
+.back{color:var(--amber-d);font-weight:600;font-size:16px;padding:6px 4px}
+h2.lt{font-size:30px;font-weight:800;letter-spacing:-.6px;margin:2px 0 6px}
+.glabel{font-size:13px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin:20px 4px 8px;font-weight:600}
+.group{background:#fff;border-radius:var(--r);box-shadow:var(--sh1);padding:4px 14px}
+.cline{gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cline .nm{font-weight:600;font-size:15px}
+.cline .nm small{font-weight:500;margin-top:2px}
+.group textarea{border:0;padding:12px 0;min-height:52px;font-size:16px;background:none;outline:none;color:var(--ink)}
+.sum{padding:12px 14px}
+.sum .sl{display:flex;justify-content:space-between;padding:4px 0;color:var(--mute)}
+.sum .sl.tot{color:var(--ink);font-size:20px;font-weight:800;border-top:1px solid var(--line);margin-top:6px;padding-top:10px}
+.sum .pay{font-size:13px;color:var(--mute);margin-top:6px}
+.link{display:block;margin:18px auto 0;color:var(--amber-d);font-weight:700;font-size:15px;padding:8px}
+.btn{border-radius:16px;font-size:16px;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn.ghost{border:0;background:#fff;box-shadow:var(--sh1);color:var(--ink)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{background:rgba(16,24,40,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:999px;padding:11px 18px;font-size:14px;font-weight:600;top:calc(12px + env(safe-area-inset-top));box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.toast.err{background:rgba(214,69,61,.96);border-radius:16px}
+.foot{font-size:12px;line-height:1.7}
+/* QR ticket = boarding pass */
+.done{display:flex;align-items:center;gap:12px;margin:6px 2px 14px}
+.done .dk{width:42px;height:42px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800;animation:pop .5s both;flex:none}
+.done b{display:block;font-size:19px;letter-spacing:-.3px}
+.done small{color:var(--mute)}
+.ticket{border-radius:24px;box-shadow:0 12px 34px rgba(16,24,40,.12)}
+.ticket .th{display:flex;align-items:center;gap:14px;text-align:left;padding:16px 18px;background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.ticket .thl small,.ticket .thr small{font-size:10.5px;letter-spacing:1px;opacity:.7;display:block}
+.ticket .th .big{font-size:46px}
+.ticket .thr{margin-left:auto;text-align:right}
+.ticket .thr b{display:block;font-size:17px;color:var(--amber)}
+.ticket .thr span{font-size:12.5px;opacity:.85}
+.ticket .qr{padding:20px 40px 4px}
+.ticket .code{font-size:22px;letter-spacing:6px}
+.ticket .tear{position:relative;height:0;border-top:2px dashed var(--line);margin:4px 0}
+.ticket .tear:before,.ticket .tear:after{content:"";position:absolute;top:-12px;width:24px;height:24px;border-radius:50%;background:var(--bg)}
+.ticket .tear:before{left:-12px}.ticket .tear:after{right:-12px}
+.ticket .tb{border-top:0}
+.ticket .tl{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding:3px 0}
+.tip{border-radius:16px;background:#fff8ea;border:0;font-size:13.5px}
+/* bottom sheet */
+.sheet{border-radius:28px 28px 0 0;background:#f7f8fa}
+.grab{width:40px;height:5px;border-radius:3px;background:#d0d5dd;margin:8px auto 0}
+.shead{padding:12px 16px 4px}
+.shead h2{font-size:22px;letter-spacing:-.4px;font-weight:800}
+.sx{background:#eaecf0;font-size:14px}
+.sfootx{background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* seat map refinement */
+.bus{border-radius:44px 44px 22px 22px;border:0;box-shadow:var(--sh2)}
+.seat{height:48px;border-radius:12px 12px 8px 8px;background:#f2f4f7;border:0;box-shadow:inset 0 -3px 0 rgba(16,24,40,.08);transition:transform .1s,background .15s}
+.seat:before{content:"";position:absolute;left:18%;right:18%;top:4px;height:4px;border-radius:3px;background:rgba(16,24,40,.08)}
+.seat.w{background:#e7f3fa}
+.seat.w.l{box-shadow:inset 4px 0 0 var(--win),inset 0 -3px 0 rgba(16,24,40,.08)}
+.seat.w.r{box-shadow:inset -4px 0 0 var(--win),inset 0 -3px 0 rgba(16,24,40,.08)}
+.seat.a{background:#f1eefb}
+.seat.sel{background:var(--amber)!important;color:var(--navy);box-shadow:0 6px 16px rgba(245,165,36,.5)!important;transform:translateY(-2px)}
+.seat.sel:before{background:rgba(15,35,64,.18)}
+.seat small{font-size:8.5px;opacity:.8}
+.pref{background:#eaecf0;border-radius:12px}
+.pref button{border-radius:9px;font-size:14px}
+/* splash refinements */
+.splash .w1{letter-spacing:-.8px}
+.splash .cta{border-radius:18px;padding:17px}
+@media (min-width:600px){.hero{border-radius:0 0 26px 26px}}
+
+.dban{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:var(--sh1);margin-bottom:12px}
+.dban.need{background:#fff4e0;box-shadow:inset 0 0 0 2px var(--amber)}
+.dban .di{font-size:22px}.dban .dt{flex:1}.dban b{display:block;font-size:15px}.dban small{color:var(--mute);font-size:12.5px}.dban .sa{font-size:22px;color:var(--mute)}
+.dh{font-size:18px;font-weight:800;margin:20px 2px 8px;letter-spacing:-.3px}
+.drow{display:flex;align-items:center;gap:12px;padding:10px 14px}
+.list .drow+.drow,.list .dvars+.drow{border-top:1px solid var(--line)}
+.drow .dn{flex:1;font-weight:600;font-size:15px}.drow .dn small{display:block;font-weight:500;color:var(--ok);font-size:12px}
+.drow.offrow .dn{color:var(--mute);text-decoration:line-through}.drow.offrow .dn small{color:var(--bad);text-decoration:none}
+.drow.offrow .thumb{filter:grayscale(1);opacity:.5}
+.dvars{margin:0 14px 10px 68px;background:#f7f8fa;border-radius:12px}
+.dv{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;font-size:14px}
+.dv+.dv{border-top:1px solid var(--line)}
+.sw{width:51px;height:31px;border-radius:999px;background:#e4e7ec;position:relative;flex:none;transition:background .2s}
+.sw i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .2s cubic-bezier(.3,.7,.4,1.2)}
+.sw.on{background:#34c759}.sw.on i{transform:translateX(20px)}
+.dtools{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--mute)}
+.chipbtn{background:#fff;box-shadow:var(--sh1);border-radius:999px;padding:7px 12px;font-weight:600;font-size:13px;color:var(--ink)}
+a.btn{text-decoration:none}
+.soldout{font-size:12px;font-weight:700;color:var(--bad);background:#fdecea;border-radius:999px;padding:6px 10px;white-space:nowrap}
+.item.off .thumb{filter:grayscale(1);opacity:.5}.item.off .iname,.item.off .iprice{color:var(--mute)}
+.opt .soldout{padding:5px 9px}
 </style>
 </head>
 <body>
@@ -254,7 +458,7 @@ label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
    SEATS_DEFAULT : nombre total de sièges (à confirmer avec Elitis).
    Peut aussi être passé dans l'URL : ?n=60
    Numérotation : rangée gauche 1 (fenêtre) | 2 (couloir), rangée droite 3 (fenêtre) | 4 (couloir), etc. */
-const SEATS_DEFAULT = 54;   // bus MAN/Irizar Elitis : 54 places (source : presse 2017), à confirmer
+const SEATS_DEFAULT = 60;   // à confirmer avec Elitis (la presse 2017 parlait de 54 places)
 const COMPANY = "Elitis Express";
 const TAGLINE = "La passion du voyage";
 /* Logo : déposez le logo officiel sous le nom logo.png à côté de index.html (sinon un badge « E » s'affiche). */
@@ -287,6 +491,12 @@ const I18N = {
     tip:"Gardez cet écran ouvert. Quand l'hôtesse arrive à votre rangée, montrez-lui ce code : elle le scanne et reçoit votre commande. Pensez à augmenter la luminosité de votre écran.",
     edit:"Modifier ma commande", reset:"Nouvelle commande", orderN:"Commande", thanks:"Merci de voyager avec nous. La passion du voyage !",
     unknown:"Article inconnu",
+    soldOut:"Épuisé", unavail:"Indisponible aujourd'hui", special:"Spécialité", from:"dès", noSeat:"Aucun siège choisi", change:"Modifier",
+    hello:"Bon appétit 👋", heroTitle:"Que souhaitez-vous déguster\u00a0?", menu:"Menu",
+    deliverTo:"Livraison à votre place", items:"Articles", subtotal:"Sous-total", payHostess:"Paiement à l'hôtesse, à la livraison",
+    readyTitle:"Votre commande est prête", readySub:"Montrez ce code à l'hôtesse",
+    seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
+    confirmSeat:"Confirmer le siège", pickSeatChip:"Choisir mon siège", close:"Fermer",
     lockedSeat:"Votre siège est défini par le code QR de votre siège. Si ce n'est pas votre place, scannez le code QR de votre propre siège."
   },
   en:{
@@ -310,6 +520,12 @@ const I18N = {
     tip:"Keep this screen open. When the hostess reaches your row, show her this code: she scans it and receives your order. Turn up your screen brightness.",
     edit:"Edit my order", reset:"New order", orderN:"Order", thanks:"Thank you for travelling with us. The passion for travel!",
     unknown:"Unknown item",
+    soldOut:"Sold out", unavail:"Unavailable today", special:"Specialty", from:"from", noSeat:"No seat selected", change:"Change",
+    hello:"Enjoy your meal 👋", heroTitle:"What would you like to eat?", menu:"Menu",
+    deliverTo:"Delivered to your seat", items:"Items", subtotal:"Subtotal", payHostess:"Pay the hostess on delivery",
+    readyTitle:"Your order is ready", readySub:"Show this code to the hostess",
+    seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
+    confirmSeat:"Confirm seat", pickSeatChip:"Choose my seat", close:"Close",
     lockedSeat:"Your seat is set by the QR code on your seat. If this is not your seat, scan the QR code on your own seat."
   }
 };
@@ -377,6 +593,8 @@ const app = $("#app"), bar = $("#bar");
 const NSEATS = Math.max(4, Math.min(120, parseInt(params.get("n"))||SEATS_DEFAULT));
 const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g," ")+" F";
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+let DAY_OFF = new Set();   // options indisponibles aujourd'hui ("id.variante")
 const store = {
   get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
@@ -403,8 +621,7 @@ function bindLang(root, rerender){
   (root||document).querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{ setLang(LANG==="fr"?"en":"fr"); rerender(); });
 }
 function header(stepIdx, right){
-  const steps = stepIdx==null ? "" : `<div class="steps">${[0,1,2].map(i=>`<div class="${i<=stepIdx?"on":""}"></div>`).join("")}</div>`;
-  return `<header class="top"><div class="brand">${LOGO}<div><h1>${COMPANY}</h1><small>${t("sub")} · ${t("tagline")}</small></div>${right||""}${langBtn()}</div>${steps}</header>`;
+  return `<header class="top"><div class="brand">${LOGO}<div class="bt"><h1>${COMPANY}</h1><small>${t("sub")} · ${t("tagline")}</small></div>${right||""}${langBtn()}</div></header>`;
 }
 
 /* ============ CONFETTIS ============ */
@@ -445,18 +662,24 @@ const T = {
   note: store.get("elt_note", ""),
   code: store.get("elt_code", null),
   pref: "all",
-  view: "seat",
+  view: "menu",
   cat: CATS[0].id,
   unroll: false
 };
 /* Nouveau voyage : on efface siège et panier après 8 h d'inactivité */
 (()=>{ const ts=store.get("elt_ts",0); if(Date.now()-ts>8*3600e3){ T.seat=null; T.cart={}; T.note=""; T.code=null; } store.set("elt_ts",Date.now()); })();
+/* Menu du jour reçu via le lien de l'hôtesse (?d=AAAA-MM-JJ&off=p8.2,g2.0) */
+if(!MODE){
+  const d=params.get("d"), off=params.get("off");
+  if(d===today()) store.set("elt_off",{d, off: off? off.split(",").filter(k=>/^[a-z0-9]+\.\d+$/i.test(k)) : []});
+  const so=store.get("elt_off",null); if(so && so.d===today()) DAY_OFF=new Set(so.off);
+  if(DAY_OFF.size){ let ch=false; Object.keys(T.cart).forEach(k=>{ if(DAY_OFF.has(k)){ delete T.cart[k]; ch=true; } }); if(ch) saveT(); }
+}
 const urlSeat = parseInt(params.get("s"));
 /* Siège verrouillé : le voyageur est arrivé par le QR code collé au dos de son siège */
 T.locked = urlSeat>=1 && urlSeat<=NSEATS;
 if(T.locked){ if(T.seat!==urlSeat){ T.seat=urlSeat; T.cart={}; T.note=""; T.code=null; } T.view = "menu"; }
 else if(T.seat && T.seat>NSEATS) T.seat=null;
-if(T.seat && !urlSeat && Object.keys(T.cart).length) T.view="menu";
 function saveT(){ store.set("elt_ts",Date.now()); store.set("elt_seat",T.seat); store.set("elt_cart",T.cart); store.set("elt_note",T.note); store.set("elt_code",T.code); }
 function cartLines(){ return Object.entries(T.cart).filter(([,q])=>q>0).map(([k,q])=>{ const [id,vi]=k.split("."); return {k,id,vi:+vi,q,p:priceOf(id,+vi)}; }); }
 function cartCount(){ return cartLines().reduce((a,l)=>a+l.q,0); }
@@ -476,7 +699,7 @@ function showWelcome(){
         <div class="w3">${t("tagline")}</div>
         <p class="w4">${t("welcomeLead")}</p>
         ${s?`<div class="sseat">${t("yourSeat")} : <b>${s.n}</b> · ${seatType(s)}</div>`:""}
-        <button class="btn amber cta" id="enter">${s?t("ctaMenu"):t("ctaSeat")} ›</button>
+        <button class="btn amber cta" id="enter">${t("ctaMenu")} ›</button>
       </div>
       <div class="sfoot">${powered()}</div>`;
     bindLang(sp, draw);
@@ -508,21 +731,22 @@ function applyUnroll(){
 
 function renderTraveler(){
   window.scrollTo(0,0);
-  if(T.view==="seat") viewSeat();
-  else if(T.view==="menu") viewMenu();
+  if(T.view==="seat") T.view="menu";
+  if(T.view==="menu") viewMenu();
   else if(T.view==="cart") viewCart();
   else if(T.view==="qr") viewQR();
   bindLang(app, renderTraveler);
   applyUnroll();
 }
 
-function viewSeat(){
+/* Sélection du siège : feuille qui s'ouvre au premier « + » (le siège est obligatoire avant d'ajouter) */
+function seatMapHTML(sel, pref){
   const rows = Math.ceil(NSEATS/4);
   const seatBtn = (n, side) => {
     if(n>NSEATS) return `<div></div>`;
     const s=seatInfo(n), w=s.type==="Fenêtre";
-    const dim = (T.pref==="win"&&!w)||(T.pref==="ais"&&w);
-    return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${T.seat===n?"sel":""}" data-seat="${n}" aria-label="${t("seat")} ${n}, ${seatType(s)}">${n}<small>${w?t("winShort"):t("aisleShort")}</small></button>`;
+    const dim = (pref==="win"&&!w)||(pref==="ais"&&w);
+    return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${sel===n?"sel":""}" data-seat="${n}" aria-label="${t("seat")} ${n}, ${seatType(s)}">${n}<small>${w?t("winShort"):t("aisleShort")}</small></button>`;
   };
   let html = "";
   for(let r=0;r<rows;r++){
@@ -530,13 +754,10 @@ function viewSeat(){
     // Gauche : fenêtre (1) puis couloir (2) | allée | Droite : couloir (4) puis fenêtre (3)
     html += `<div class="row"><div class="rown">${r+1}</div>${seatBtn(b+1,"l")}${seatBtn(b+2,"l")}<div class="aisle">${t("aisleLbl")}</div>${seatBtn(b+4,"r")}${seatBtn(b+3,"r")}</div>`;
   }
-  app.innerHTML = header(0) + `<div class="wrap">
-    <h2>${t("chooseSeat")}</h2>
-    <p class="lead">${t("seatLead")}</p>
-    <div class="pref" id="pref">
-      <button data-p="all" class="${T.pref==="all"?"on":""}">${t("all")}</button>
-      <button data-p="win" class="${T.pref==="win"?"on":""}">${t("window")}</button>
-      <button data-p="ais" class="${T.pref==="ais"?"on":""}">${t("aisle")}</button>
+  return `<div class="pref">
+      <button data-p="all" class="${pref==="all"?"on":""}">${t("all")}</button>
+      <button data-p="win" class="${pref==="win"?"on":""}">${t("window")}</button>
+      <button data-p="ais" class="${pref==="ais"?"on":""}">${t("aisle")}</button>
     </div>
     <div class="legend">
       <span><i class="dot" style="border-color:#9fd0e6;box-shadow:inset 4px 0 0 var(--win)"></i>${t("window")}</span>
@@ -547,87 +768,132 @@ function viewSeat(){
       <div class="front"><div class="wheel"></div><span>${t("front")}</span><span>${t("door")}</span></div>
       ${html}
       <div class="back">${t("back")}</div>
-    </div>
-    <div class="foot">${powered()}</div>
-  </div>`;
-  app.querySelectorAll("[data-seat]").forEach(b=>b.onclick=()=>{ T.seat=+b.dataset.seat; saveT(); viewSeat(); bindLang(app, renderTraveler); });
-  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ T.pref=b.dataset.p; viewSeat(); bindLang(app, renderTraveler); });
-  const s = T.seat && seatInfo(T.seat);
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="go" ${T.seat?"":"disabled"}>${s?`${t("seat")} ${s.n} · ${seatType(s)}`:t("selectSeat")}<span class="sp">${t("seeMenu")}</span></button></div>`;
-  $("#go").onclick=()=>{ if(T.seat){ T.view="menu"; T.unroll=true; renderTraveler(); } };
-  if(T.seat){ const el=app.querySelector(`[data-seat="${T.seat}"]`); el&&el.scrollIntoView({block:"center"}); }
+    </div>`;
 }
+function openSeatSheet(onDone, reason){
+  if(document.getElementById("seatsheet")) return;
+  let sel=T.seat||null;
+  const bg=document.createElement("div"); bg.className="sheetbg"; bg.id="seatsheet";
+  const close=()=>{ bg.classList.add("closing"); setTimeout(()=>bg.remove(),250); document.body.style.overflow=""; };
+  const draw=()=>{
+    const s=sel&&seatInfo(sel);
+    bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(t("chooseSeat"))}"><div class="grab"></div>
+      <div class="shead"><div><h2>${t("chooseSeat")}</h2><p class="lead">${reason==="add"?t("seatFirst"):t("seatLead")}</p></div><button class="sx" id="sx" aria-label="${t("close")}">✕</button></div>
+      <div class="sbodyx">${seatMapHTML(sel, T.pref)}</div>
+      <div class="sfootx"><button class="btn amber" id="sok" ${sel?"":"disabled"}>${s?`${t("confirmSeat")} ${s.n} · ${seatType(s)}`:t("selectSeat")}</button></div>
+    </div>`;
+    bg.querySelectorAll("[data-seat]").forEach(b=>b.onclick=()=>{ haptic(8); sel=+b.dataset.seat; const st=bg.querySelector(".sbodyx").scrollTop; draw(); bg.querySelector(".sbodyx").scrollTop=st; });
+    bg.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ T.pref=b.dataset.p; const st=bg.querySelector(".sbodyx").scrollTop; draw(); bg.querySelector(".sbodyx").scrollTop=st; });
+    bg.querySelector("#sx").onclick=close;
+    bg.querySelector("#sok").onclick=()=>{ if(!sel) return; T.seat=sel; saveT(); close(); toast(`${t("seat")} ${sel} · ${seatType(seatInfo(sel))} ✓`); onDone&&onDone(); };
+  };
+  bg.onclick=e=>{ if(e.target===bg) close(); };
+  draw();
+  document.body.appendChild(bg); document.body.style.overflow="hidden";
+  if(sel){ const el=bg.querySelector(`[data-seat="${sel}"]`); el&&el.scrollIntoView({block:"center"}); }
+}
+/* Re-dessine l'écran courant sans perdre la position de défilement */
+function rerenderKeepScroll(){ const y=scrollY; if(T.view==="menu") viewMenu(); else if(T.view==="cart") viewCart(); bindLang(app, renderTraveler); window.scrollTo(0,y); }
 
+/* ---------- Design « app native » : composants voyageur ---------- */
+function haptic(ms){ try{ navigator.vibrate && navigator.vibrate(ms||8); }catch(e){} }
+const ICO = {p1:"🍗",p2:"🍗",p3:"🍗",p4:"🍗",p5:"🍗",p6:"🍗",p7:"🔥",p8:"🍗",p9:"🍗",g1:"🍢",g2:"🐟",g3:"🍢",g4:"🍢",g5:"🥩",g6:"🥩",g7:"🍖",s1:"🌯",s2:"🌯",s3:"🍔",s4:"🍞",s5:"🥟",z1:"🍕",z2:"🍕",z3:"🍕",z4:"🍕",z5:"🍕",a1:"🍟",a2:"🍚"};
+const CAT_ICO = {poulet:"🍗",grill:"🔥",snack:"🌯",pizza:"🍕",acc:"🍟"};
+const SPECIAL = {p1:1,z5:1};
 function stepper(k){
+  if(DAY_OFF.has(k)) return `<span class="soldout">${t("soldOut")}</span>`;
   const q=T.cart[k]||0;
-  return `<div class="step ${q?"":"zero"}"><button class="minus" data-k="${k}" data-d="-1" aria-label="${t("remove")}">−</button><span>${q}</span><button class="plus" data-k="${k}" data-d="1" aria-label="${t("add")}">+</button></div>`;
+  if(!q) return `<div class="step zero"><button class="plus" data-k="${k}" data-d="1" aria-label="${t("add")}">+</button></div>`;
+  return `<div class="step"><button class="minus" data-k="${k}" data-d="-1" aria-label="${t("remove")}">−</button><span>${q}</span><button class="plus" data-k="${k}" data-d="1" aria-label="${t("add")}">+</button></div>`;
 }
 function itemCard(m){
   const vs=variants(m); const has = vs.some((_,i)=>T.cart[m.id+"."+i]);
   const d=descOf(m);
-  let body;
-  if(!m.v){
-    body = `<div class="ihead"><div><div class="iname">${esc(nameOf(m))}</div>${d?`<div class="idesc">${esc(d)}</div>`:""}<div class="iprice mt" style="margin-top:6px">${fmt(m.price)}</div></div>${stepper(m.id+".0")}</div>`;
-  } else {
-    body = `<div class="iname">${esc(nameOf(m))}</div>${d?`<div class="idesc">${esc(d)}</div>`:""}` +
-      vs.map((v,i)=>`<div class="vline"><div class="vl">${esc(vlab(v[0]))} · <b>${fmt(v[1])}</b></div>${stepper(m.id+"."+i)}</div>`).join("");
-  }
-  return `<div class="item ${has?"has":""}" id="it-${m.id}">${body}</div>`;
+  const badge = SPECIAL[m.id] ? `<span class="spec">★ ${t("special")}</span>` : "";
+  const from = m.v ? Math.min(...vs.map(v=>v[1])) : m.price;
+  const head = `<div class="thumb c-${m.cat}">${ICO[m.id]||CAT_ICO[m.cat]}</div>
+    <div class="ib">${badge}<div class="iname">${esc(nameOf(m))}</div>${d?`<div class="idesc">${esc(d)}</div>`:""}
+      <div class="iprice">${m.v&&vs.some(v=>v[1]!==from)?`<small>${t("from")}</small> `:""}${fmt(from)}</div></div>`;
+  if(!m.v) return `<div class="item ${has?"has":""} ${DAY_OFF.has(m.id+".0")?"off":""}" id="it-${m.id}"><div class="irow">${head}<div class="ia">${stepper(m.id+".0")}</div></div></div>`;
+  const allOff = vs.every((_,i)=>DAY_OFF.has(m.id+"."+i));
+  if(allOff) return `<div class="item off" id="it-${m.id}"><div class="irow">${head}<div class="ia">${stepper(m.id+".0")}</div></div></div>`;
+  return `<div class="item ${has?"has":""}" id="it-${m.id}"><div class="irow">${head}</div>
+    <div class="opts">${vs.map((v,i)=>`<div class="opt ${T.cart[m.id+"."+i]?"on":""}"><span class="ol">${esc(vlab(v[0]))}</span><span class="op">${fmt(v[1])}</span>${stepper(m.id+"."+i)}</div>`).join("")}</div></div>`;
 }
-function seatChip(){ const s=seatInfo(T.seat); return T.locked ? `<button class="seatchip" id="chg" title="${esc(t("lockedSeat"))}">🔒 ${t("seat")} ${s.n} · ${seatType(s)}</button>` : `<button class="seatchip" id="chg">${t("seat")} ${s.n} · ${seatType(s)} ✎</button>`; }
-function chgSeat(){ if(T.locked){ toast(t("lockedSeat")); return; } T.view="seat"; renderTraveler(); }
+function seatPill(){
+  if(!T.seat) return `<button class="seatpill need" id="chg"><span class="si">💺</span><span class="st"><small>${t("noSeat")}</small><b>${t("pickSeatChip")}</b></span><span class="sa">›</span></button>`;
+  const s=seatInfo(T.seat);
+  return `<button class="seatpill" id="chg"><span class="si">💺</span><span class="st"><small>${t("yourSeat")}</small><b>${s.n} · ${seatType(s)}</b></span><span class="sa">${T.locked?"🔒":t("change")}</span></button>`;
+}
+function seatChip(){ return seatPill(); }
+function chgSeat(){ haptic(); if(T.locked){ toast(t("lockedSeat")); return; } openSeatSheet(rerenderKeepScroll, "change"); }
 function viewMenu(){
-  app.innerHTML = header(1, seatChip()) +
-    `<nav class="cats" id="cats">${CATS.map(c=>`<button data-c="${c.id}" class="${T.cat===c.id?"on":""}">${catLabel(c)}</button>`).join("")}</nav>` +
-    CATS.map(c=>`<section class="sec" id="sec-${c.id}"><h3>${catLabel(c)}</h3>${MENU.filter(m=>m.cat===c.id).map(itemCard).join("")}</section>`).join("") +
+  app.innerHTML = header() +
+    `<section class="hero"><div class="hk">${t("hello")}</div><div class="ht">${t("heroTitle")}</div>${seatPill()}</section>` +
+    `<nav class="cats" id="cats">${CATS.map(c=>`<button data-c="${c.id}" class="${T.cat===c.id?"on":""}"><span>${CAT_ICO[c.id]}</span>${catLabel(c)}</button>`).join("")}</nav>` +
+    CATS.map(c=>`<section class="sec" id="sec-${c.id}"><h3>${catLabel(c)}</h3><div class="list">${MENU.filter(m=>m.cat===c.id).map(itemCard).join("")}</div></section>`).join("") +
     `<div class="foot">${t("menuFoot")}<br>${COMPANY}, ${t("tagline").toLowerCase()}<br>${powered()}</div>`;
   $("#cats").style.top=$("header.top").offsetHeight+"px";
   $("#chg").onclick=chgSeat;
   app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
-    T.cat=b.dataset.c; const sec=$("#sec-"+T.cat);
-    window.scrollTo({top: sec.getBoundingClientRect().top + scrollY - 120, behavior:"smooth"});
+    haptic(5); T.cat=b.dataset.c; const sec=$("#sec-"+T.cat);
+    window.scrollTo({top: sec.getBoundingClientRect().top + scrollY - $("header.top").offsetHeight - 58, behavior:"smooth"});
     markCat();
   });
   bindSteppers(app, ()=>{ refreshItems(); menuBar(); });
   menuBar();
   window.onscroll = ()=>{
     if(T.view!=="menu") return;
+    const lim=$("header.top").offsetHeight+70;
     let cur=CATS[0].id;
-    for(const c of CATS){ const el=$("#sec-"+c.id); if(el && el.getBoundingClientRect().top<140) cur=c.id; }
+    for(const c of CATS){ const el=$("#sec-"+c.id); if(el && el.getBoundingClientRect().top<lim) cur=c.id; }
     if(cur!==T.cat){ T.cat=cur; markCat(); }
+    const ct=$("#cats"); if(ct) ct.classList.toggle("stuck", ct.getBoundingClientRect().top<=$("header.top").offsetHeight+1);
   };
 }
 function markCat(){
-  document.querySelectorAll("[data-c]").forEach(b=>{ const on=b.dataset.c===T.cat; b.classList.toggle("on",on); if(on) b.scrollIntoView({inline:"center",block:"nearest"}); });
+  document.querySelectorAll("[data-c]").forEach(b=>{ const on=b.dataset.c===T.cat; b.classList.toggle("on",on); if(on) b.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"}); });
 }
 function refreshItems(){ MENU.forEach(m=>{ const el=$("#it-"+m.id); if(el){ el.outerHTML=itemCard(m); } }); bindSteppers(app, ()=>{ refreshItems(); menuBar(); }); }
 function bindSteppers(root, after){
-  root.querySelectorAll(".step button").forEach(b=>b.onclick=()=>{ setQty(b.dataset.k, +b.dataset.d); after(); });
+  root.querySelectorAll(".step button").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k, d=+b.dataset.d;
+    haptic(d>0?10:6);
+    if(d>0 && DAY_OFF.has(k)){ toast(t("unavail")); return; }
+    if(d>0 && !T.seat){ openSeatSheet(()=>{ setQty(k,d); rerenderKeepScroll(); }, "add"); return; }   // siège obligatoire avant d'ajouter
+    setQty(k,d); after();
+  });
 }
 function menuBar(){
   const c=cartCount();
-  bar.innerHTML = `<div class="in"><button class="btn" id="go" ${c?"":"disabled"}>${c?`<span class="cnt">${c}</span> ${t("viewOrder")}<span class="sp">${fmt(cartTotal())}</span>`:t("addItems")}</button></div>`;
-  $("#go").onclick=()=>{ if(cartCount()){ T.view="cart"; renderTraveler(); } };
+  const was = bar.querySelector(".cartbar.show");
+  bar.innerHTML = c ? `<div class="in"><button class="cartbar show ${was?"":"enter"}" id="go"><span class="cnt">${c}</span><span class="cl">${t("viewOrder")}</span><span class="sp">${fmt(cartTotal())}</span><span class="chev">›</span></button></div>` : "";
+  const g=$("#go"); if(g){ if(was){ g.classList.add("bump"); } g.onclick=()=>{ haptic(); if(!T.seat){ openSeatSheet(()=>{ T.view="cart"; renderTraveler(); }, "add"); return; } T.view="cart"; renderTraveler(); }; }
 }
-
+function backBar(label, to){ return `<div class="navrow"><button class="back" id="back">‹ ${label}</button></div>`; }
 function viewCart(){
   window.onscroll=null;
   const lines=cartLines();
   if(!lines.length){ T.view="menu"; return viewMenu(); }
-  app.innerHTML = header(1, seatChip()) + `<div class="wrap">
-    <h2>${t("myOrder")}</h2><p class="lead">${t("checkLead")}</p>
-    <div class="card" id="lines">${lines.map(l=>`<div class="cline"><div class="nm">${esc(labelOf(l.id,l.vi))}<small>${fmt(l.p)} × ${l.q} = ${fmt(l.p*l.q)}</small></div>${stepper(l.k)}</div>`).join("")}
-      <div class="tot"><span>${t("total")}</span><span>${fmt(cartTotal())}</span></div></div>
-    <label class="lb" for="note">${t("noteLbl")}</label>
-    <textarea id="note" maxlength="80" placeholder="${esc(t("notePh"))}">${esc(T.note)}</textarea>
-    <button class="btn ghost mt" id="more">${t("addMore")}</button>
+  app.innerHTML = header() + `<div class="wrap">
+    ${backBar(t("menu"))}
+    <h2 class="lt">${t("myOrder")}</h2>
+    <div class="glabel">${t("deliverTo")}</div>
+    ${seatPill()}
+    <div class="glabel">${t("items")}</div>
+    <div class="group">${lines.map(l=>{ const m=BY_ID[l.id]; return `<div class="cline"><div class="thumb sm c-${m?m.cat:"acc"}">${ICO[l.id]||"🍽"}</div><div class="nm">${esc(labelOf(l.id,l.vi))}<small>${fmt(l.p)}</small></div>${stepper(l.k)}</div>`; }).join("")}</div>
+    <div class="glabel">${t("noteLbl")}</div>
+    <div class="group"><textarea id="note" maxlength="80" rows="2" placeholder="${esc(t("notePh"))}">${esc(T.note)}</textarea></div>
+    <div class="group sum"><div class="sl"><span>${t("subtotal")}</span><span>${fmt(cartTotal())}</span></div><div class="sl tot"><span>${t("total")}</span><span>${fmt(cartTotal())}</span></div><div class="pay">💵 ${t("payHostess")}</div></div>
+    <button class="link" id="more">${t("addMore")}</button>
   </div>`;
+  $("#back").onclick=()=>{ haptic(5); T.view="menu"; renderTraveler(); };
   $("#chg").onclick=chgSeat;
   $("#more").onclick=()=>{ T.view="menu"; renderTraveler(); };
   $("#note").oninput=e=>{ T.note=e.target.value; saveT(); };
-  bindSteppers(app, ()=>{ viewCart(); bindLang(app, renderTraveler); });
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="go">${t("genQR")}<span class="sp">${fmt(cartTotal())}</span></button></div>`;
-  $("#go").onclick=()=>{ if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); };
+  bindSteppers(app, ()=>{ const y=scrollY; viewCart(); bindLang(app, renderTraveler); window.scrollTo(0,y); });
+  bar.innerHTML = `<div class="in"><button class="cartbar show amber" id="go"><span class="cl">${t("genQR")}</span><span class="sp">${fmt(cartTotal())}</span><span class="chev">›</span></button></div>`;
+  $("#go").onclick=()=>{ haptic(15); if(!T.seat){ openSeatSheet(()=>$("#go").click(), "add"); return; } if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); confetti({n:60, y:innerHeight*0.3, power:7}); };
 }
 function newCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; for(let i=0;i<4;i++) c+=a[Math.floor(Math.random()*a.length)]; return c; }
 function buildPayload(){
@@ -638,25 +904,26 @@ function buildPayload(){
 function viewQR(){
   window.onscroll=null;
   const s=seatInfo(T.seat), lines=cartLines();
-  app.innerHTML = header(2) + `<div class="wrap">
+  app.innerHTML = header() + `<div class="wrap">
+    <div class="done"><div class="dk">✓</div><div><b>${t("readyTitle")}</b><small>${t("readySub")}</small></div></div>
     <div class="ticket">
-      <div class="th"><div style="font-size:12px;opacity:.8">${t("seatUp")}</div><div class="big">${s.n}</div><div style="font-size:13px;margin-top:4px">${seatType(s)} · ${t("row")} ${s.row} · ${s.side==="Gauche"?t("sideL"):t("sideR")}</div></div>
+      <div class="th"><div class="thl"><small>${t("seatUp")}</small><div class="big">${s.n}</div></div><div class="thr"><small>${COMPANY.toUpperCase()}</small><b>${seatType(s)}</b><span>${t("row")} ${s.row} · ${s.side==="Gauche"?t("sideL"):t("sideR")}</span></div></div>
       <div class="qr">${qrSvg(buildPayload())}</div>
       <div class="code">${T.code}</div>
+      <div class="tear"></div>
       <div class="tb">
-        ${lines.map(l=>`<div style="display:flex;justify-content:space-between;font-size:14px;padding:2px 0"><span>${l.q} × ${esc(labelOf(l.id,l.vi))}</span><span>${fmt(l.p*l.q)}</span></div>`).join("")}
+        ${lines.map(l=>`<div class="tl"><span>${l.q} × ${esc(labelOf(l.id,l.vi))}</span><span>${fmt(l.p*l.q)}</span></div>`).join("")}
         ${T.note.trim()?`<div class="onote">📝 ${esc(T.note.trim())}</div>`:""}
         <div class="tot"><span>${t("toPay")}</span><span>${fmt(cartTotal())}</span></div>
       </div>
     </div>
-    <div class="tip">${t("tip")}</div>
-    <button class="btn ghost" id="edit">${t("edit")}</button>
-    <button class="btn ghost mt" id="reset">${t("reset")}</button>
+    <div class="tip">☀️ ${t("tip")}</div>
+    <div class="actions"><button class="btn ghost" id="edit">${t("edit")}</button><button class="btn ghost" id="reset">${t("reset")}</button></div>
     <div class="foot">${t("orderN")} ${T.code} · ${COMPANY}<br>${t("thanks")}<br>${powered()}</div>
   </div>`;
   bar.innerHTML="";
-  $("#edit").onclick=()=>{ T.view="cart"; renderTraveler(); };
-  $("#reset").onclick=()=>{ T.cart={}; T.note=""; T.code=null; saveT(); T.view="menu"; renderTraveler(); };
+  $("#edit").onclick=()=>{ haptic(); T.view="cart"; renderTraveler(); };
+  $("#reset").onclick=()=>{ haptic(); T.cart={}; T.note=""; T.code=null; saveT(); T.view="menu"; renderTraveler(); };
 }
 
 /* =====================================================
@@ -666,8 +933,72 @@ const H = { orders: store.get("elt_orders", []), round: store.get("elt_round", n
 function saveRound(){ store.set("elt_round", H.round); }
 const okey = o => o.seat+"-"+o.code;
 function roundOrders(){ if(!H.round) return []; return H.round.keys.map(k=>H.orders.find(o=>okey(o)===k)).filter(Boolean).sort((a,b)=>a.seat-b.seat); }
-function aggItems(list){ const agg={}; list.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; })); return Object.keys(agg).sort((a,b)=>agg[b]-agg[a]).map(k=>{const [id,vi]=k.split("."); return {label:labelOf(id,+vi), q:agg[k]};}); }
+function aggItems(list){ const agg={}; list.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; })); return Object.keys(agg).sort((a,b)=>agg[b]-agg[a]).map(k=>{const [id,vi]=k.split("."); return {label:labelOf(id,+vi), q:agg[k], off:DAY_OFF.has(k)};}); }
 function beep(ok){ try{ const A=window.AudioContext||window.webkitAudioContext; if(!A) return; beep.ctx=beep.ctx||new A(); const c=beep.ctx,o=c.createOscillator(),g=c.createGain(); o.frequency.value=ok?880:300; g.gain.value=.12; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+(ok?.12:.25)); }catch(e){} }
+/* ============ MENU DU JOUR (hôtesse) ============
+   Chaque jour, avant le départ, l'hôtesse confirme les articles disponibles.
+   Stocké sur son téléphone + lien / QR « menu du jour » à partager aux voyageurs. */
+H.dispo = store.get("elt_dispo", null);
+const dispoOK = () => !!(H.dispo && H.dispo.date===today());
+if(dispoOK()) DAY_OFF = new Set(H.dispo.off||[]);
+function allKeys(m){ return variants(m).map((_,i)=>m.id+"."+i); }
+function dispoLink(){ const off=[...DAY_OFF]; return location.origin+location.pathname+"?d="+today()+(off.length?"&off="+off.join(","):""); }
+function renderDispo(){
+  window.onscroll=null;
+  if(!H.draft) H.draft = new Set(dispoOK()? (H.dispo.off||[]) : (H.dispo&&H.dispo.off||[]));
+  const D=H.draft, nOff=D.size;
+  const sw=(attr,on,label)=>`<button class="sw ${on?"on":""}" ${attr} role="switch" aria-checked="${on}" aria-label="${esc(label)}"><i></i></button>`;
+  const rows = CATS.map(c=>`<h3 class="dh">${CAT_ICO[c.id]} ${c.label}</h3><div class="list">${MENU.filter(m=>m.cat===c.id).map(m=>{
+      const ks=allKeys(m), allOn=ks.every(k=>!D.has(k)), anyOn=ks.some(k=>!D.has(k));
+      return `<div class="drow ${anyOn?"":"offrow"}"><div class="thumb sm c-${m.cat}">${ICO[m.id]}</div><div class="dn">${esc(m.name)}<small>${anyOn?(allOn?"Disponible":"Partiellement disponible"):"Indisponible aujourd'hui"}</small></div>${sw(`data-di="${m.id}"`, anyOn, m.name)}</div>`+
+        (m.v && m.v.length>1 ? `<div class="dvars">${m.v.map((v,i)=>`<div class="dv"><span>${esc(v[0])} · ${fmt(v[1])}</span>${sw(`data-dk="${m.id}.${i}"`, !D.has(m.id+"."+i), m.name+" "+v[0])}</div>`).join("")}</div>` : "");
+    }).join("")}</div>`).join("");
+  app.innerHTML = header(null, `<span class="seatchip">Hôtesse</span>`) + `<div class="wrap">
+    <div class="navrow"><button class="back" id="back">‹ Commandes</button></div>
+    <h2 class="lt">Menu du jour</h2>
+    <p class="lead">${new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}. Désactivez les articles qui ne sont pas disponibles aujourd'hui, puis confirmez avant le départ.</p>
+    <div class="dtools"><button class="chipbtn" id="allon">Tout disponible</button><span>${MENU.length} articles · <b>${nOff}</b> option${nOff>1?"s":""} indisponible${nOff>1?"s":""}</span></div>
+    ${rows}
+  </div>`;
+  app.querySelectorAll("[data-di]").forEach(b=>b.onclick=()=>{ haptic(8); const m=BY_ID[b.dataset.di], ks=allKeys(m), anyOn=ks.some(k=>!D.has(k)); ks.forEach(k=> anyOn?D.add(k):D.delete(k)); const y=scrollY; renderDispo(); scrollTo(0,y); });
+  app.querySelectorAll("[data-dk]").forEach(b=>b.onclick=()=>{ haptic(8); const k=b.dataset.dk; D.has(k)?D.delete(k):D.add(k); const y=scrollY; renderDispo(); scrollTo(0,y); });
+  $("#allon").onclick=()=>{ D.clear(); const y=scrollY; renderDispo(); scrollTo(0,y); };
+  $("#back").onclick=()=>{ H.draft=null; H.tab="todo"; renderHostess(); };
+  bar.innerHTML = `<div class="in"><button class="cartbar show amber" id="dok"><span class="cl">✓ Confirmer le menu du jour</span><span class="sp">${nOff?nOff+" indispo.":"Tout dispo"}</span></button></div>`;
+  $("#dok").onclick=()=>{
+    haptic(15);
+    H.dispo={date:today(), off:[...D], t:Date.now()}; store.set("elt_dispo",H.dispo); DAY_OFF=new Set(D); H.draft=null;
+    toast("Menu du jour confirmé ✓"); H.tab="share"; renderHostess();
+  };
+}
+function renderShare(){
+  window.scrollTo(0,0);
+  const link=dispoLink(), off=[...DAY_OFF];
+  const offLabels=off.map(k=>{const [id,vi]=k.split("."); return labelOf(id,+vi);});
+  const msg=`🍽️ Elitis Express · Menu à bord du ${new Date().toLocaleDateString("fr-FR")}\n${off.length?"Indisponible aujourd'hui : "+offLabels.join(", ")+"\n":""}Commandez depuis votre siège : ${link}`;
+  app.innerHTML = header(null, `<span class="seatchip">Hôtesse</span>`) + `<div class="wrap">
+    <div class="done"><div class="dk">✓</div><div><b>Menu du jour confirmé</b><small>${new Date(H.dispo.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} · ${off.length?off.length+" option(s) indisponible(s)":"tout est disponible"}</small></div></div>
+    ${off.length?`<div class="glabel">Indisponible aujourd'hui</div><div class="group">${offLabels.map(l=>`<div class="cline"><div class="nm">${esc(l)}</div><span class="badge unpaid">ÉPUISÉ</span></div>`).join("")}</div>`:""}
+    <div class="glabel">Menu du jour pour les voyageurs</div>
+    <div class="group" style="text-align:center;padding:16px">
+      <div style="max-width:220px;margin:0 auto">${qrSvg(link,"M")}</div>
+      <p style="font-size:13px;color:var(--mute);margin:10px 0 0">Les voyageurs qui ouvrent ce lien ou scannent ce code voient les articles épuisés grisés. Les commandes contenant un article épuisé sont signalées au scan.</p>
+    </div>
+    <div class="actions mt"><a class="btn ghost" id="wa" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost" id="copy">Copier le lien</button></div>
+    <button class="btn mt" id="go2">Aller aux commandes ›</button>
+    <button class="link" id="edit2">Modifier le menu du jour</button>
+  </div>`;
+  bar.innerHTML="";
+  $("#copy").onclick=async()=>{ try{ await navigator.clipboard.writeText(link); toast("Lien copié ✓"); }catch(e){ toast(link); } };
+  $("#go2").onclick=()=>{ H.tab="todo"; renderHostess(); };
+  $("#edit2").onclick=()=>{ H.tab="dispo"; renderHostess(); };
+}
+function dispoBanner(){
+  if(!dispoOK()) return `<button class="dban need" id="dban"><span class="di">⚠️</span><span class="dt"><b>Menu du jour non confirmé</b><small>Vérifiez les articles disponibles avant le départ</small></span><span class="sa">›</span></button>`;
+  const n=DAY_OFF.size;
+  return `<button class="dban" id="dban"><span class="di">✅</span><span class="dt"><b>Menu du jour confirmé</b><small>${new Date(H.dispo.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} · ${n?n+" option(s) épuisée(s)":"tout disponible"} · QR voyageurs</small></span><span class="sa">›</span></button>`;
+}
+const offMark = i => DAY_OFF.has(i.id+"."+i.vi) ? ` <span class="badge unpaid">ÉPUISÉ</span>` : "";
 function saveH(){ store.set("elt_orders", H.orders); }
 function parsePayload(txt){
   txt = String(txt||"").trim();
@@ -698,6 +1029,8 @@ function addOrder(o){
   H.orders.push(rec); saveH(); return {o:rec, conflict:other};
 }
 function renderHostess(){
+  if(H.tab==="dispo") return renderDispo();
+  if(H.tab==="share") return renderShare();
   const list = H.orders.slice().sort((a,b)=>a.seat-b.seat);
   const todo = list.filter(o=>!o.served), done=list.filter(o=>o.served);
   const cashed = H.orders.filter(o=>o.paid).reduce((a,o)=>a+o.total,0);
@@ -712,9 +1045,9 @@ function renderHostess(){
       const tm=new Date(H.round.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
       body = `<div class="rhead"><small>Tournée de ${tm}</small><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><span><b>${ro.length}</b> commande${ro.length>1?"s":""}</span><span style="font-weight:700">${fmt(tot)}</span></div><small>À encaisser : ${fmt(unpaid)}</small></div>
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:6px 0 8px">1. À préparer au poste</h3>
-      <div class="card"><ul class="prep big">${aggItems(ro).map(a=>`<li><span>${esc(a.label)}</span><b>× ${a.q}</b></li>`).join("")}</ul></div>
+      <div class="card"><ul class="prep big">${aggItems(ro).map(a=>`<li><span>${esc(a.label)}${a.off?` <span class="badge unpaid">ÉPUISÉ</span>`:""}</span><b>× ${a.q}</b></li>`).join("")}</ul></div>
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:16px 0 8px">2. À livrer, dans l'ordre des sièges</h3>
-      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
       <button class="btn ghost mt" id="resume">📷 Ajouter des commandes à cette tournée</button>
       <button class="btn mt" id="allserved">✓ Toute la tournée servie</button>`;
     }
@@ -727,6 +1060,7 @@ function renderHostess(){
     body = shown.length ? shown.map(orderCard).join("") : `<div class="empty">${H.tab==="todo"?"Aucune commande en attente.<br>Touchez « Scanner » pour commencer.":"Aucune commande servie."}</div>`;
   }
   app.innerHTML = header(null, `<span class="seatchip">Hôtesse</span>`) + `<div class="wrap">
+    ${dispoBanner()}
     <div class="stats">
       <div class="stat"><b>${todo.length}</b><span>À servir</span></div>
       <div class="stat"><b>${done.length}</b><span>Servies</span></div>
@@ -748,6 +1082,7 @@ function renderHostess(){
     <div class="foot">Les commandes restent enregistrées sur ce téléphone.<br>${powered()}</div>
   </div>`;
   app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ H.tab=b.dataset.t; renderHostess(); });
+  $("#dban").onclick=()=>{ haptic(); H.tab = dispoOK() ? "share" : "dispo"; renderHostess(); };
   app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
     const o=H.orders.find(x=>x.code===b.dataset.code && x.seat===+b.dataset.seat); if(!o) return;
     const a=b.dataset.act;
@@ -774,7 +1109,7 @@ function orderCard(o){
   return `<div class="ord ${o.served?"served":""}" id="o-${o.seat}-${o.code}">
     <div class="oh"><div class="oseat">${o.seat}<small>${s.type.toUpperCase()}</small></div>
       <div class="ometa"><b>${fmt(o.total)}</b>${o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">NON PAYÉ</span>`}<br>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</div></div>
-    <ul class="olist">${o.items.map(i=>`<li><span>${i.q} × ${esc(labelOf(i.id,i.vi))}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
+    <ul class="olist">${o.items.map(i=>`<li><span>${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
     ${o.note?`<div class="onote">📝 ${esc(o.note)}</div>`:""}
     ${o.conflict?`<div class="conf">⚠ Deux commandes pour le siège ${o.seat} (#${esc(o.code)} et #${esc(o.conflict)}). Même voyageur ? Sinon, vérifiez les billets et supprimez la mauvaise commande.</div>`:""}
     <div class="oact">
@@ -797,6 +1132,8 @@ function handleScan(txt, manual){
     beep(false); try{ navigator.vibrate && navigator.vibrate([300,100,300]); }catch(e){}
     setTimeout(()=>toast(`⚠ Siège ${o.seat} : il existe déjà la commande #${r.conflict.code}. Vérifiez les billets.`, true), 50);
   } else beep(true);
+  const offs=o.items.filter(i=>DAY_OFF.has(i.id+"."+i.vi));
+  if(offs.length && !r.conflict){ beep(false); setTimeout(()=>toast(`⚠ Siège ${o.seat} : épuisé aujourd'hui, ${offs.map(i=>labelOf(i.id,i.vi)).join(", ")}`, true), 50); }
   const key=okey(o);
   if(!H.round) H.round={t:Date.now(), keys:[]};
   if(!H.round.keys.includes(key)){ H.round.keys.push(key); }
@@ -813,6 +1150,7 @@ function renderTally(){
     (ro.length?`<div class="chips">${ro.map(o=>`<span class="${okey(o)===H.lastNew?"new":""}">${o.seat}</span>`).join("")}</div>`:`<div style="font-size:12px;color:var(--mute);margin-top:4px">Scannez les voyageurs les uns après les autres, la caméra reste ouverte.</div>`);
 }
 async function startScan(resume){
+  if(!dispoOK()){ toast("Confirmez d'abord le menu du jour", true); H.tab="dispo"; renderHostess(); return; }
   const sc=$("#scan"), vid=$("#vid");
   beep.ctx = beep.ctx || (()=>{ try{ const A=window.AudioContext||window.webkitAudioContext; return A?new A():null; }catch(e){ return null; } })();
   if(!resume || !H.round){ H.round={t:Date.now(), keys:[]}; saveRound(); }
