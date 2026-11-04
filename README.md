@@ -31,13 +31,21 @@ Travelers can browse the menu freely. The first time they tap "+", a seat picker
 
 Once items are in the cart, a **Hôtesse** QR button sits next to the cart bar, and the order screen's main button is **Montrer à l'hôtesse**. It opens the selection with its QR code (seat required). **Afficher en grand** (or tapping the QR) shows a full-screen white QR for easy scanning, and the screen is kept awake where supported.
 
+## Order confirmation (hostess → traveler)
+
+1. The traveler shows the QR code; the hostess scans it (as many travelers as needed per round).
+2. Each scanned order is **À confirmer**. She taps **Confirmer la commande** (or **Confirmer les N commandes** for the whole round).
+3. With Supabase configured, the confirmation is stored online and the traveler's screen switches from "En attente de l'hôtesse" to **"Commande reçue par l'hôtesse"** (checked every 12 seconds and when the phone wakes), then to **"Commande servie"** when she marks it served.
+4. If the traveler changes the selection afterwards, their screen says **"Sélection modifiée"** until the hostess scans and confirms again.
+5. Offline: confirmations are kept on the hostess phone and sent when the network returns. Without Supabase, confirmation works on the hostess phone only.
+
 ## Menu du jour synced to all travelers (Supabase)
 
 When configured, the menu confirmed by the hostess is published online and applies automatically to every traveler of that bus (loaded on open, refreshed every minute and when the phone wakes). Sold-out items already in a cart are removed with a message.
 
 **One-time setup (about 10 minutes, free plan):**
 1. Create a project on supabase.com.
-2. SQL Editor > New query > paste `supabase.sql` > Run.
+2. SQL Editor > New query > paste `supabase.sql` > Run (creates the daily menu table, the orders table and the PIN-protected functions; safe to run again).
 3. Set the hostess PIN: `update public.app_secrets set v = 'YOUR-PIN' where k = 'hostess_pin';`
 4. Project Settings > API: copy the Project URL and the anon / publishable key into `config.js` (edit it directly on GitHub). No rebuild needed.
 

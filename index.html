@@ -581,6 +581,20 @@ a.btn{text-decoration:none}
 .spec{background:#fff4c2;color:#8a3a06}
 .link,.back,.wrap .seatpill .sa{color:var(--amber-d)}
 .qcard .qlogo{height:26px;width:auto;margin:0 auto 2px;display:block}
+
+.chip.warn{background:#fff1e6;color:var(--amber-d)}
+.ord.unc:before{background:var(--yellow)}
+.oact .tg.cfm{background:var(--amber);color:var(--navy);font-size:16px;box-shadow:0 6px 16px rgba(254,89,21,.3)}
+.osync{font-size:12.5px;font-weight:600;border-radius:10px;padding:7px 10px;margin-top:10px}
+.osync.ok{background:#e7f6ed;color:var(--ok)}.osync.wait{background:#fff6e0;color:#8a5a00}
+.ostat{display:flex;gap:12px;align-items:center;border-radius:18px;padding:14px 16px;margin:0 0 14px;box-shadow:var(--sh1);animation:pop .4s both}
+.ostat b{display:block;font-size:16.5px;letter-spacing:-.2px}.ostat small{font-size:13px;opacity:.8}
+.ostat .osi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;flex:none;background:rgba(255,255,255,.6)}
+.ostat.ok{background:#e7f6ed;color:#0f5132}
+.ostat.wait{background:#fff;color:var(--ink)}
+.ostat.warn{background:#fff4c2;color:#6b3a06}
+.spin{width:20px;height:20px;border-radius:50%;border:3px solid #eaecf0;border-top-color:var(--amber);animation:spin 1s linear infinite;display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -649,7 +663,11 @@ const I18N = {
     deliverTo:"Livraison à votre place", items:"Articles", subtotal:"Sous-total", payHostess:"Paiement à l'hôtesse, à la livraison",
     readyTitle:"Votre sélection est prête", readySub:"Montrez ce code à l'hôtesse",
     showHostess:"Montrer à l'hôtesse", hostessShort:"Hôtesse", fullscreen:"Afficher en grand pour l'hôtesse", fsHint:"Présentez cet écran à l'hôtesse", itemsShort:"article(s)",
-    doorLbl:"Porte", seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
+    stWaiting:"En attente de l'hôtesse", stWaitingSub:"Votre statut se met à jour ici dès qu'elle scanne et confirme votre sélection.",
+    stReceived:"Commande reçue par l'hôtesse", stReceivedSub:"Elle prépare votre commande et vous la sert à votre place.",
+    stServed:"Commande servie", stServedSub:"Bon appétit et bon voyage avec Elitis Express !",
+    stChanged:"Sélection modifiée", stChangedSub:"Montrez de nouveau ce code à l'hôtesse pour confirmer les changements.",
+    seatStart:"Pour commencer, choisissez votre siège. L'hôtesse vous servira directement à votre place.", doorLbl:"Porte", seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
     confirmSeat:"Confirmer le siège", pickSeatChip:"Choisir mon siège", close:"Fermer",
     lockedSeat:"Votre siège est défini par le code QR de votre siège. Si ce n'est pas votre place, scannez le code QR de votre propre siège."
   },
@@ -679,7 +697,11 @@ const I18N = {
     deliverTo:"Delivered to your seat", items:"Items", subtotal:"Subtotal", payHostess:"Pay the hostess on delivery",
     readyTitle:"Your selection is ready", readySub:"Show this code to the hostess",
     showHostess:"Show the hostess", hostessShort:"Hostess", fullscreen:"Show full screen to the hostess", fsHint:"Show this screen to the hostess", itemsShort:"item(s)",
-    doorLbl:"Door", seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
+    stWaiting:"Waiting for the hostess", stWaitingSub:"Your status updates here as soon as she scans and confirms your selection.",
+    stReceived:"Order received by the hostess", stReceivedSub:"She is preparing your order and will serve you at your seat.",
+    stServed:"Order served", stServedSub:"Enjoy your meal and have a great trip with Elitis Express!",
+    stChanged:"Selection changed", stChangedSub:"Show this code to the hostess again to confirm the changes.",
+    seatStart:"To start, choose your seat. The hostess will serve you right at your seat.", doorLbl:"Door", seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
     confirmSeat:"Confirm seat", pickSeatChip:"Choose my seat", close:"Close",
     lockedSeat:"Your seat is set by the QR code on your seat. If this is not your seat, scan the QR code on your own seat."
   }
@@ -805,6 +827,12 @@ async function cloudGet(bus){
   const r=await fetch(`${CLOUD.url}/rest/v1/dispo?bus=eq.${encodeURIComponent(bus)}&select=day,off,updated_at`,{headers:cloudHeaders(),cache:"no-store"});
   if(!r.ok) throw new Error("net"); const j=await r.json(); return j[0]||null;
 }
+async function cloudRpc(name, body){
+  const r=await fetch(`${CLOUD.url}/rest/v1/rpc/${name}`,{method:"POST",headers:cloudHeaders(),body:JSON.stringify(body),cache:"no-store"});
+  if(!r.ok){ const tx=await r.text().catch(()=>""); throw new Error(/pin/i.test(tx)?"pin":"net"); }
+  const tx=await r.text(); return tx ? JSON.parse(tx) : null;
+}
+const itemsKey = items => items.map(i=>`${i.id}.${i.vi}x${i.q}`).join(",");
 async function cloudSet(pin,bus,day,off){
   const r=await fetch(`${CLOUD.url}/rest/v1/rpc/set_dispo`,{method:"POST",headers:cloudHeaders(),body:JSON.stringify({p_pin:pin,p_bus:bus,p_day:day,p_off:off})});
   if(!r.ok){ const tx=await r.text().catch(()=>""); throw new Error(/pin/i.test(tx)?"pin":"net"); }
@@ -903,7 +931,7 @@ function showWelcome(){
         <div class="w3">${t("tagline")}</div>
         <p class="w4">${t("welcomeLead")}</p>
         ${s?`<div class="sseat">${t("yourSeat")} : <b>${s.n}</b> · ${seatType(s)}</div>`:""}
-        <button class="btn amber cta" id="enter">${t("ctaMenu")} ›</button>
+        <button class="btn amber cta" id="enter">${s?t("ctaMenu"):t("ctaSeat")} ›</button>
       </div>
       <div class="sfoot">${powered()}</div>`;
     bindLang(sp, draw);
@@ -913,6 +941,7 @@ function showWelcome(){
     confetti({n:90, y:innerHeight*0.75, angle:-Math.PI*0.9, spread:Math.PI*0.8, power:9, lift:4});
     try{ sessionStorage.setItem("elt_welcomed","1"); }catch(e){}
     T.unroll=true; renderTraveler();
+    if(!T.seat) setTimeout(()=>openSeatSheet(rerenderKeepScroll, "start"), 650);   // siège d'abord
     sp.classList.add("out");
     setTimeout(()=>sp.remove(), 800);
   };
@@ -981,7 +1010,7 @@ function openSeatSheet(onDone, reason){
   const draw=()=>{
     const s=sel&&seatInfo(sel);
     bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(t("chooseSeat"))}"><div class="grab"></div>
-      <div class="shead"><div><h2>${t("chooseSeat")}</h2><p class="lead">${reason==="add"?t("seatFirst"):t("seatLead")}</p></div><button class="sx" id="sx" aria-label="${t("close")}">✕</button></div>
+      <div class="shead"><div><h2>${t("chooseSeat")}</h2><p class="lead">${reason==="add"?t("seatFirst"):reason==="start"?t("seatStart"):t("seatLead")}</p></div><button class="sx" id="sx" aria-label="${t("close")}">✕</button></div>
       <div class="sbodyx">${seatMapHTML(sel, T.pref)}</div>
       <div class="sfootx"><button class="btn amber" id="sok" ${sel?"":"disabled"}>${s?`${t("confirmSeat")} ${s.n} · ${seatType(s)}`:t("selectSeat")}</button></div>
     </div>`;
@@ -1106,7 +1135,7 @@ function showHostess(){
   if(!cartCount()) return;
   if(!T.seat){ openSeatSheet(showHostess, "add"); return; }
   const first=!T.code;
-  if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler();
+  if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); pollStatus();
   if(first) confetti({n:60, y:innerHeight*0.3, power:7});
 }
 let wakeLock=null;
@@ -1130,11 +1159,39 @@ function buildPayload(){
   const note = encodeURIComponent((T.note||"").trim().slice(0,80));
   return [PAYLOAD_PREFIX, T.seat, T.code, items, note].join("|");
 }
+/* Statut de la commande, mis à jour quand l'hôtesse confirme / sert */
+T.status = store.get("elt_status", null);   // {code, status, items}
+function curItemsKey(){ return cartLines().map(l=>`${l.id}.${l.vi}x${l.q}`).join(","); }
+function statusHTML(){
+  if(!cloudOn() || !T.code) return "";
+  const st = T.status && T.status.code===T.code ? T.status : null;
+  if(st && st.status && st.items!==curItemsKey()) return `<div class="ostat warn"><span class="osi">✏️</span><div><b>${t("stChanged")}</b><small>${t("stChangedSub")}</small></div></div>`;
+  if(st && st.status==="servie") return `<div class="ostat ok"><span class="osi">🍽️</span><div><b>${t("stServed")}</b><small>${t("stServedSub")}</small></div></div>`;
+  if(st && st.status==="recue") return `<div class="ostat ok"><span class="osi">✅</span><div><b>${t("stReceived")}</b><small>${t("stReceivedSub")}</small></div></div>`;
+  return `<div class="ostat wait"><span class="osi"><i class="spin"></i></span><div><b>${t("stWaiting")}</b><small>${t("stWaitingSub")}</small></div></div>`;
+}
+async function pollStatus(){
+  if(MODE || !cloudOn() || !T.code || !T.seat) return;
+  try{
+    const r = await cloudRpc("get_order_status",{p_bus:BUS,p_day:today(),p_code:T.code,p_seat:T.seat});
+    const next = r && r.status ? {code:T.code, status:r.status, items:r.items} : null;
+    const prev = T.status && T.status.code===T.code ? T.status : null;
+    if(JSON.stringify(next)===JSON.stringify(prev)) return;
+    T.status=next; store.set("elt_status",T.status);
+    const el=$("#ostatus"); if(el) el.innerHTML=statusHTML();
+    if(next && (!prev || prev.status!==next.status) && next.items===curItemsKey()){
+      haptic(40);
+      toast(next.status==="servie" ? t("stServed") : t("stReceived"));
+      if(next.status==="recue" && T.view==="qr") confetti({n:80, y:innerHeight*0.25, power:8});
+    }
+  }catch(e){}
+}
 function viewQR(){
   window.onscroll=null;
   const s=seatInfo(T.seat), lines=cartLines();
   app.innerHTML = header() + `<div class="wrap">
     <div class="done"><div class="dk">✓</div><div><b>${t("readyTitle")}</b><small>${t("readySub")}</small></div></div>
+    <div id="ostatus">${statusHTML()}</div>
     <button class="btn amber big" id="fs"><span class="qi">${QR_ICON}</span> ${t("fullscreen")}</button>
     <div class="ticket">
       <div class="th"><div class="thl"><small>${t("seatUp")}</small><div class="big">${s.n}</div></div><div class="thr"><small>${COMPANY.toUpperCase()}</small><b>${seatType(s)}</b><span>${t("row")} ${s.row} · ${s.side==="Gauche"?t("sideL"):t("sideR")}</span></div></div>
@@ -1155,7 +1212,7 @@ function viewQR(){
   $("#fs").onclick=openFullQR; $("#qrtap").onclick=openFullQR;
   keepAwake(true);
   $("#edit").onclick=()=>{ haptic(); keepAwake(false); T.view="cart"; renderTraveler(); };
-  $("#reset").onclick=()=>{ haptic(); T.cart={}; T.note=""; T.code=null; saveT(); T.view="menu"; renderTraveler(); };
+  $("#reset").onclick=()=>{ haptic(); T.cart={}; T.note=""; T.code=null; T.status=null; store.set("elt_status",null); saveT(); T.view="menu"; renderTraveler(); };
 }
 
 /* =====================================================
@@ -1269,7 +1326,7 @@ function addOrder(o){
     const prev=H.orders[i];
     const same = JSON.stringify(prev.items)===JSON.stringify(o.items) && prev.note===o.note;
     if(same) return {dup:true, o:prev};
-    H.orders[i] = {...prev, ...o, t:now, served:false};
+    H.orders[i] = {...prev, ...o, t:now, served:false, confirmed:false, synced:undefined};
     saveH(); return {upd:true, o:H.orders[i]};
   }
   const rec = {...o, t:now, served:false, paid:false};
@@ -1277,8 +1334,26 @@ function addOrder(o){
   if(other){ rec.conflict=other.code; other.conflict=rec.code; }
   H.orders.push(rec); saveH(); return {o:rec, conflict:other};
 }
+/* Confirmation des commandes par l'hôtesse : enregistrée et envoyée au voyageur (statut « reçue ») */
+async function pushOrder(o){
+  if(!cloudOn() || !o.confirmed) return "off";
+  try{ await cloudRpc("set_order",{p_pin:store.get("elt_pin",""), p_bus:BUS, p_day:today(), p_code:o.code, p_seat:o.seat, p_items:itemsKey(o.items), p_total:o.total, p_status:o.served?"servie":"recue"}); o.synced=true; saveH(); return "ok"; }
+  catch(e){ o.synced=false; saveH(); return e.message; }
+}
+async function confirmOrders(list){
+  if(!list.length) return;
+  haptic(15);
+  list.forEach(o=>{ o.confirmed=true; o.confirmedAt=Date.now(); });
+  saveH(); const y=scrollY; renderHostess(); scrollTo(0,y);
+  if(!cloudOn()){ toast(list.length>1?`${list.length} commandes confirmées ✓`:`Siège ${list[0].seat} : commande confirmée ✓`); return; }
+  const res=await Promise.all(list.map(pushOrder));
+  const bad=res.filter(r=>r!=="ok").length, pin=res.includes("pin");
+  toast(pin ? "PIN hôtesse incorrect : vérifiez-le dans Menu du jour" : bad ? `Confirmé sur ce téléphone. Envoi au voyageur dès le retour du réseau.` : (list.length>1?`${list.length} commandes confirmées ✓ Les voyageurs sont notifiés.`:`Siège ${list[0].seat} confirmé ✓ Le voyageur est notifié.`), pin||bad>0);
+  const y2=scrollY; renderHostess(); scrollTo(0,y2);
+}
 function renderHostess(){
   if(cloudOn() && dispoOK() && H.dispo.synced===false && !H.retrying){ H.retrying=true; publishDispo().then(r=>{ H.retrying=false; if(r==="ok"){ toast("Menu du jour publié ✓"); if(H.tab!=="dispo") renderHostess(); } }); }
+  if(cloudOn() && !H.retryingO){ const pend=H.orders.filter(o=>o.confirmed && o.synced===false); if(pend.length){ H.retryingO=true; Promise.all(pend.map(pushOrder)).then(()=>{ H.retryingO=false; }); } }
   if(H.tab==="dispo") return renderDispo();
   if(H.tab==="share") return renderShare();
   window.onscroll=null;
@@ -1300,7 +1375,8 @@ function renderHostess(){
       <div class="hsec"><span class="step1">1</span> À préparer au poste</div>
       ${qtyList(aggItems(ro))}
       <div class="hsec"><span class="step1">2</span> À livrer, dans l'ordre des sièges</div>
-      <div class="hlist"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      <div class="hlist"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${!o.confirmed?`<span class="chip warn">À CONFIRMER</span>`:o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      ${ro.some(o=>!o.confirmed)?`<button class="btn amber big mt" id="confirmall">✓ Confirmer les ${ro.filter(o=>!o.confirmed).length} commande(s) de la tournée</button>`:`<div class="osync ok" style="margin-top:12px">✓ Toutes les commandes de la tournée sont confirmées${cloudOn()?" · voyageurs notifiés":""}</div>`}
       <div class="hbtns"><button class="btn ghost" id="resume">＋ Ajouter à la tournée</button><button class="btn" id="allserved">✓ Tout servi</button></div>`;
     }
   } else if(H.tab==="prep"){
@@ -1343,7 +1419,8 @@ function renderHostess(){
   app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
     const o=H.orders.find(x=>x.code===b.dataset.code && x.seat===+b.dataset.seat); if(!o) return;
     const a=b.dataset.act; haptic(10);
-    if(a==="serve") o.served=!o.served;
+    if(a==="confirm"){ confirmOrders([o]); return; }
+    if(a==="serve"){ o.served=!o.served; if(o.served && !o.confirmed){ o.confirmed=true; o.confirmedAt=Date.now(); } pushOrder(o); }
     if(a==="pay") o.paid=!o.paid;
     if(a==="del"){
       if(b.dataset.armed){ H.orders=H.orders.filter(x=>x!==o); H.orders.forEach(x=>{ if(x.conflict===o.code && x.seat===o.seat) delete x.conflict; }); }
@@ -1352,7 +1429,8 @@ function renderHostess(){
     saveH(); const y=scrollY; renderHostess(); scrollTo(0,y);
   });
   const rs=$("#resume"); if(rs) rs.onclick=()=>startScan(true);
-  const as=$("#allserved"); if(as) as.onclick=()=>{ haptic(15); roundOrders().forEach(o=>o.served=true); saveH(); toast("Tournée marquée servie ✓"); renderHostess(); };
+  const as=$("#allserved"); if(as) as.onclick=()=>{ haptic(15); roundOrders().forEach(o=>{ o.served=true; if(!o.confirmed){ o.confirmed=true; o.confirmedAt=Date.now(); } pushOrder(o); }); saveH(); toast("Tournée marquée servie ✓"); renderHostess(); };
+  const ca=$("#confirmall"); if(ca) ca.onclick=()=>confirmOrders(roundOrders().filter(o=>!o.confirmed));
   $("#manualgo").onclick=()=>{ handleScan($("#manual").value, true); };
   const clr=$("#clear");
   clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; H.round=null; saveRound(); saveH(); renderHostess(); toast("Commandes vidées"); } else { haptic(20); clr.dataset.armed="1"; clr.textContent="⚠️ Touchez encore pour confirmer"; } };
@@ -1364,16 +1442,21 @@ const CAM_ICON = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" st
 function orderCard(o){
   const s=seatInfo(o.seat);
   const time=new Date(o.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-  const st = o.served ? `<span class="chip ok">Servi</span>` : o.paid ? `<span class="chip ok">Payé</span>` : `<span class="chip bad">À payer</span>`;
-  return `<div class="ord ${o.served?"served":""} ${o.conflict?"cfl":""}" id="o-${o.seat}-${o.code}">
+  const st = !o.confirmed ? `<span class="chip warn">À confirmer</span>` : o.served ? `<span class="chip ok">Servi</span>` : o.paid ? `<span class="chip ok">Payé</span>` : `<span class="chip bad">À payer</span>`;
+  const sync = !cloudOn()||!o.confirmed ? "" : o.synced ? `<div class="osync ok">✓ Confirmée${o.served?" et servie":""} · voyageur notifié</div>` : o.synced===false ? `<div class="osync wait">⏳ Confirmée sur ce téléphone · envoi au voyageur en attente de réseau</div>` : `<div class="osync wait">⏳ Envoi au voyageur…</div>`;
+  const act = !o.confirmed
+    ? `<button data-act="confirm" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg cfm">✓ Confirmer la commande</button>`
+    : `<button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.paid?"on":""}">💵 ${o.paid?"Payé ✓":"Payé"}</button>
+      <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.served?"on":""}">🍽️ ${o.served?"Servi ✓":"Servi"}</button>`;
+  return `<div class="ord ${o.served?"served":""} ${o.conflict?"cfl":""} ${o.confirmed?"":"unc"}" id="o-${o.seat}-${o.code}">
     <div class="oh"><div class="oseat">${o.seat}<small>${s.type==="Fenêtre"?"FENÊTRE":"COULOIR"}</small></div>
       <div class="ometa"><b>${fmt(o.total)}</b><span>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</span></div>${st}</div>
     <ul class="olist">${o.items.map(i=>`<li><span><b>${i.q}×</b> ${esc(labelOf(i.id,i.vi))}${offMark(i)}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
     ${o.note?`<div class="onote">📝 ${esc(o.note)}</div>`:""}
     ${o.conflict?`<div class="conf">⚠ Deux commandes pour le siège ${o.seat} (#${esc(o.code)} et #${esc(o.conflict)}). Même voyageur ? Sinon, vérifiez les billets et supprimez la mauvaise commande.</div>`:""}
+    ${sync}
     <div class="oact">
-      <button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.paid?"on":""}">💵 ${o.paid?"Payé ✓":"Payé"}</button>
-      <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.served?"on":""}">🍽️ ${o.served?"Servi ✓":"Servi"}</button>
+      ${act}
       <button data-act="del" data-code="${esc(o.code)}" data-seat="${o.seat}" class="del" aria-label="Supprimer">🗑</button>
     </div></div>`;
 }
@@ -1496,7 +1579,7 @@ if(MODE==="hotesse"||MODE==="hostess") renderHostess();
 else if(MODE==="admin") renderAdmin();
 else {
   if(welcomeNeeded()){ renderTraveler(); showWelcome(); } else renderTraveler();
-  if(cloudOn()){ syncDispoTraveler(); setInterval(syncDispoTraveler, 60000); document.addEventListener("visibilitychange",()=>{ if(!document.hidden) syncDispoTraveler(); }); }
+  if(cloudOn()){ syncDispoTraveler(); pollStatus(); setInterval(syncDispoTraveler, 60000); setInterval(pollStatus, 12000); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ syncDispoTraveler(); pollStatus(); } }); }
 }
 </script>
 </body>
