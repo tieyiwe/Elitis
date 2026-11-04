@@ -557,6 +557,8 @@ a.btn{text-decoration:none}
 .tally div[style]{color:rgba(255,255,255,.75)!important}
 .scan .msg{font-size:14px;opacity:.9}
 .cfg{padding:6px 14px;margin:12px 0 6px}.cfg label{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;font-weight:600;font-size:15px}.cfg label+label{border-top:1px solid var(--line)}.cfg input{width:55%;border:0;background:#f2f4f7;border-radius:10px;padding:9px 10px;font-size:16px;text-align:right}
+.doorcell{grid-column:span 2;height:48px;border-radius:12px;border:2px dashed #d0d5dd;color:var(--mute);font-size:12px;font-weight:700;display:grid;place-items:center;letter-spacing:.5px}
+.backrow{margin-top:6px;padding-top:8px;border-top:2px dashed var(--line)}
 </style>
 </head>
 <body>
@@ -581,10 +583,13 @@ a.btn{text-decoration:none}
 <script>
 "use strict";
 /* ============ CONFIGURATION ============
-   SEATS_DEFAULT : nombre total de sièges (à confirmer avec Elitis).
-   Peut aussi être passé dans l'URL : ?n=60
-   Numérotation : rangée gauche 1 (fenêtre) | 2 (couloir), rangée droite 3 (fenêtre) | 4 (couloir), etc. */
-const SEATS_DEFAULT = 60;   // à confirmer avec Elitis (la presse 2017 parlait de 54 places)
+   Plan du bus Elitis (50 places) :
+   - 12 rangées à gauche (2 sièges : fenêtre puis couloir)
+   - 11 rangées à droite : pas de sièges à droite sur la rangée de la porte du milieu (DOOR_ROW)
+   - rangée du fond : 4 sièges numérotés de gauche à droite (47 48 49 50)
+   Numérotation par rangée : gauche fenêtre, gauche couloir, droite fenêtre, droite couloir.
+   La rangée de la porte peut aussi être passée dans l'URL : ?porte=7 */
+const LAYOUT = { rows: 12, doorRow: 7, back: 4 };   // doorRow : à confirmer sur le bus
 const COMPANY = "Elitis Express";
 const TAGLINE = "La passion du voyage";
 /* Logo : déposez le logo officiel sous le nom logo.png à côté de index.html (sinon un badge « E » s'affiche). */
@@ -622,7 +627,7 @@ const I18N = {
     deliverTo:"Livraison à votre place", items:"Articles", subtotal:"Sous-total", payHostess:"Paiement à l'hôtesse, à la livraison",
     readyTitle:"Votre commande est prête", readySub:"Montrez ce code à l'hôtesse",
     showHostess:"Montrer à l'hôtesse", hostessShort:"Hôtesse", fullscreen:"Afficher en grand pour l'hôtesse", fsHint:"Présentez cet écran à l'hôtesse", itemsShort:"article(s)",
-    seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
+    doorLbl:"Porte", seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
     confirmSeat:"Confirmer le siège", pickSeatChip:"Choisir mon siège", close:"Fermer",
     lockedSeat:"Votre siège est défini par le code QR de votre siège. Si ce n'est pas votre place, scannez le code QR de votre propre siège."
   },
@@ -652,7 +657,7 @@ const I18N = {
     deliverTo:"Delivered to your seat", items:"Items", subtotal:"Subtotal", payHostess:"Pay the hostess on delivery",
     readyTitle:"Your order is ready", readySub:"Show this code to the hostess",
     showHostess:"Show the hostess", hostessShort:"Hostess", fullscreen:"Show full screen to the hostess", fsHint:"Show this screen to the hostess", itemsShort:"item(s)",
-    seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
+    doorLbl:"Door", seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
     confirmSeat:"Confirm seat", pickSeatChip:"Choose my seat", close:"Close",
     lockedSeat:"Your seat is set by the QR code on your seat. If this is not your seat, scan the QR code on your own seat."
   }
@@ -718,7 +723,25 @@ function labelOf(id,vi){ const m=BY_ID[id]; if(!m) return t("unknown")+" ("+id+"
 /* ============ HELPERS ============ */
 const $ = s=>document.querySelector(s);
 const app = $("#app"), bar = $("#bar");
-const NSEATS = Math.max(4, Math.min(120, parseInt(params.get("n"))||SEATS_DEFAULT));
+const DOOR_ROW = Math.max(1, Math.min(LAYOUT.rows, parseInt(params.get("porte"))||LAYOUT.doorRow));
+function buildLayout(door){
+  const rows=[], info={}; let n=0;
+  const add=(row,side,type)=>{ n++; info[n]={n,row,side,type}; return n; };
+  for(let r=1;r<=LAYOUT.rows;r++){
+    const L1=add(r,"Gauche","Fenêtre"), L2=add(r,"Gauche","Couloir");
+    let R3=null, R4=null;
+    if(r!==door){ R3=add(r,"Droite","Fenêtre"); R4=add(r,"Droite","Couloir"); }
+    rows.push({r, cells:[L1,L2,R4,R3], door:r===door});      // affichage : G fenêtre, G couloir | allée | D couloir, D fenêtre
+  }
+  if(LAYOUT.back){                                            // rangée du fond : de gauche à droite
+    const r=LAYOUT.rows+1;
+    const a=add(r,"Gauche","Fenêtre"), b=add(r,"Gauche","Couloir"), c=add(r,"Droite","Couloir"), d=add(r,"Droite","Fenêtre");
+    rows.push({r, cells:[a,b,c,d], back:true});
+  }
+  return {rows, info, total:n};
+}
+const SEATMAP = buildLayout(DOOR_ROW);
+const NSEATS = SEATMAP.total;
 const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g," ")+" F";
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const today = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
@@ -727,10 +750,7 @@ const store = {
   get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 };
-function seatInfo(n){
-  const pos = (n-1)%4;               // 0:G fenêtre, 1:G couloir, 2:D fenêtre, 3:D couloir
-  return { n, row: Math.floor((n-1)/4)+1, side: pos<2?"Gauche":"Droite", type: (pos===0||pos===2)?"Fenêtre":"Couloir" };
-}
+function seatInfo(n){ return SEATMAP.info[n] || { n, row: 0, side: "Gauche", type: "Couloir" }; }
 const seatType = s => s.type==="Fenêtre" ? t("window") : t("aisle");
 function qrSvg(text, ec){
   const q = qrcode(0, ec||"M"); q.addData(text); q.make();
@@ -903,18 +923,17 @@ function renderTraveler(){
 
 /* Sélection du siège : feuille qui s'ouvre au premier « + » (le siège est obligatoire avant d'ajouter) */
 function seatMapHTML(sel, pref){
-  const rows = Math.ceil(NSEATS/4);
   const seatBtn = (n, side) => {
-    if(n>NSEATS) return `<div></div>`;
+    if(!n) return `<div></div>`;
     const s=seatInfo(n), w=s.type==="Fenêtre";
     const dim = (pref==="win"&&!w)||(pref==="ais"&&w);
     return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${sel===n?"sel":""}" data-seat="${n}" aria-label="${t("seat")} ${n}, ${seatType(s)}">${n}<small>${w?t("winShort"):t("aisleShort")}</small></button>`;
   };
   let html = "";
-  for(let r=0;r<rows;r++){
-    const b=r*4;
-    // Gauche : fenêtre (1) puis couloir (2) | allée | Droite : couloir (4) puis fenêtre (3)
-    html += `<div class="row"><div class="rown">${r+1}</div>${seatBtn(b+1,"l")}${seatBtn(b+2,"l")}<div class="aisle">${t("aisleLbl")}</div>${seatBtn(b+4,"r")}${seatBtn(b+3,"r")}</div>`;
+  for(const row of SEATMAP.rows){
+    const [c1,c2,c3,c4]=row.cells;
+    const right = row.door ? `<div class="doorcell">🚪 ${t("doorLbl")}</div>` : `${seatBtn(c3,"r")}${seatBtn(c4,"r")}`;
+    html += `<div class="row ${row.back?"backrow":""}"><div class="rown">${row.r}</div>${seatBtn(c1,"l")}${seatBtn(c2,"l")}<div class="aisle">${row.back?"":t("aisleLbl")}</div>${right}</div>`;
   }
   return `<div class="pref">
       <button data-p="all" class="${pref==="all"?"on":""}">${t("all")}</button>
@@ -1416,14 +1435,14 @@ $("#scanclose").onclick=stopScan; $("#scanx").onclick=stopScan;
    ===================================================== */
 function renderAdmin(){
   const base = store.get("elt_base", location.origin+location.pathname);
-  const n = NSEATS;
   app.innerHTML = header(null, `<span class="seatchip">Admin</span>`) + `<div class="wrap">
     <div class="noprint">
       <h2>QR codes des sièges</h2>
       <p class="lead">Chaque code ouvre le menu avec le siège déjà sélectionné. Imprimez, découpez et collez au dos du siège de devant.</p>
       <div class="card">
         <div class="field"><label>Numéro du bus (pour le menu du jour)</label><input id="bus" value="${esc(BUS)}" maxlength="20"></div>
-        <div class="field"><label>Nombre de sièges du bus</label><input id="n" type="number" min="4" max="120" value="${n}"></div>
+        <div class="field"><label>Rangée de la porte du milieu (pas de sièges à droite)</label><input id="porte" type="number" min="1" max="${LAYOUT.rows}" value="${DOOR_ROW}"></div>
+        <p class="hnote">Plan : ${LAYOUT.rows} rangées à gauche, ${LAYOUT.rows-1} à droite, ${LAYOUT.back} sièges au fond · <b>${NSEATS} places</b></p>
         <div class="field"><label>Adresse publique de l'application</label><input id="base" value="${esc(base)}"></div>
         <button class="btn" id="gen">Mettre à jour</button>
         <button class="btn amber mt" id="print">🖨 Imprimer la planche</button>
@@ -1432,18 +1451,19 @@ function renderAdmin(){
     <div class="sheet" id="sheet"></div>
   </div>`;
   const build=()=>{
-    const N=Math.max(4,Math.min(120,parseInt($("#n").value)||SEATS_DEFAULT));
+    const N=NSEATS;
+    const pq = DOOR_ROW!==LAYOUT.doorRow ? "&porte="+DOOR_ROW : "";
     const b=$("#base").value.trim(); store.set("elt_base",b);
     const sep=b.includes("?")?"&":"?";
     BUS=($("#bus").value||"1").replace(/[^\w-]/g,"").slice(0,20)||"1"; store.set("elt_bus",BUS); const bq="&b="+encodeURIComponent(BUS);
-    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N+bq,"M")}<div class="qf">Réservé au personnel</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
+    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse"+bq+pq,"M")}<div class="qf">Réservé au personnel</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     for(let i=1;i<=N;i++){
       const s=seatInfo(i);
-      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row} · Bus ${esc(BUS)}</div>${qrSvg(b+sep+"s="+i+"&n="+N+bq,"M")}<div class="qf">Scannez pour commander · Scan to order</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
+      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row} · Bus ${esc(BUS)}</div>${qrSvg(b+sep+"s="+i+bq+pq,"M")}<div class="qf">Scannez pour commander · Scan to order</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     }
     $("#sheet").innerHTML=html;
   };
-  $("#gen").onclick=()=>{ const N=parseInt($("#n").value)||SEATS_DEFAULT; const u=new URL(location.href); u.searchParams.set("n",N); history.replaceState(null,"",u); build(); };
+  $("#gen").onclick=()=>{ const P=parseInt($("#porte").value)||LAYOUT.doorRow; const u=new URL(location.href); u.searchParams.set("porte",P); u.searchParams.set("b",($("#bus").value||"1")); location.href=u.toString(); };
   $("#print").onclick=()=>window.print();
   build();
   bar.innerHTML="";

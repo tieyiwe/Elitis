@@ -15,7 +15,7 @@ No login, no server, no database. The order is stored inside the QR code itself,
 | Hostess | `BASE/?mode=hotesse` | Scan rounds ("tournées"): scan many travelers in a row, then get the station summary (what to prepare + what to deliver per seat). Also "à servir / à préparer / servies", paid/served, cash total |
 | Admin | `BASE/?mode=admin` | Print the sheet of seat QR codes + hostess QR code |
 
-Add `&n=54` to any link to set the number of seats (default 54).
+Add `&b=12` to any link to set the bus number.
 
 ## Traveler experience
 
@@ -59,9 +59,19 @@ Without `config.js` values, the app works offline as before (shareable link / QR
 - Editing an order keeps the same order code, so a re-scan updates the order instead of creating a duplicate.
 - Real-time blocking across phones (a taken seat greyed out for everyone) needs a shared online database: planned for the full version.
 
-## Seat numbering
+## Seat numbering (Elitis bus, 50 seats)
 
-Left side: 1 window, 2 aisle. Right side: 3 window, 4 aisle. Then 5 to 8 on row 2, and so on.
+- 12 rows on the left (2 seats: window, aisle), 11 rows on the right: the middle-door row has no seats on the right.
+- Each row: left window, left aisle, right window, right aisle (1 2 | 4 3).
+- Back row: 4 seats numbered left to right, 47 48 49 50.
+- The door row is set by `LAYOUT.doorRow` in `src/app.html` (currently 7), or per link with `?porte=7`. The admin page has a field for it.
+
+| Row | Seats |
+|---|---|
+| 1 to 6 | 1 to 24 |
+| 7 (door) | 25, 26 (left only) |
+| 8 to 12 | 27 to 46 |
+| Back | 47 48 49 50 |
 
 ## Editing
 
