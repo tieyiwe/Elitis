@@ -453,6 +453,109 @@ a.btn{text-decoration:none}
 .fsc{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:17px;letter-spacing:1px}
 .fsqr .btn{max-width:320px}
 .cartbar .cl,.cartbar .sp{white-space:nowrap}
+
+/* ===== HOSTESS PREMIUM ===== */
+.hchip{margin-left:auto;background:var(--amber);color:var(--navy);font-weight:800;font-size:12px;border-radius:999px;padding:6px 12px;letter-spacing:.3px}
+.hhero{background:linear-gradient(180deg,rgba(15,35,64,.94),var(--navy2));color:#fff;padding:4px 16px 16px;border-radius:0 0 26px 26px}
+.hhero .hk{font-size:13px;opacity:.7;text-transform:capitalize}
+.hhero .ht{font-size:26px;font-weight:800;letter-spacing:-.5px;margin:0 0 12px}
+.hhero .dban{background:rgba(255,255,255,.1);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.14)}
+.hhero .dban small{color:rgba(255,255,255,.7)}
+.hhero .dban .sa{color:rgba(255,255,255,.6)}
+.hhero .dban.need{background:var(--amber);color:var(--navy);border-color:var(--amber);animation:pulse 2s ease-in-out infinite}
+.hhero .dban.need small{color:rgba(15,35,64,.75)}.hhero .dban.need .sa{color:var(--navy)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(245,165,36,.25)}}
+.kpis{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:8px}
+.kpi{background:rgba(255,255,255,.08);border-radius:14px;padding:10px 12px}
+.kpi b{display:block;font-size:22px;font-weight:800;letter-spacing:-.4px}
+.kpi.wide b{font-size:18px;color:var(--amber);line-height:1.5}
+.kpi span{font-size:11.5px;opacity:.7}
+.seg{position:sticky;z-index:15;display:flex;gap:4px;margin:12px 16px 0;padding:4px;background:#e4e7ec;border-radius:14px}
+.seg button{flex:1;padding:9px 2px;border-radius:10px;font-weight:650;font-size:13.5px;color:#475467;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .2s,color .2s}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+.seg button i{font-style:normal;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;background:var(--navy);color:#fff;display:inline-grid;place-items:center;padding:0 5px}
+.seg button:not(.on) i{background:#98a2b3}
+.hwrap{padding-top:14px}
+.hnote{font-size:13px;color:var(--mute);margin:0 2px 10px}
+.hempty{text-align:center;padding:34px 20px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:6px}
+.hempty .hei{width:64px;height:64px;border-radius:50%;background:#fff;box-shadow:var(--sh2);display:grid;place-items:center;font-size:28px;margin-bottom:6px}
+.hempty b{color:var(--ink);font-size:17px}
+.hempty span{font-size:14px;max-width:280px}
+.hlist{background:#fff;border-radius:var(--r);box-shadow:var(--sh2);overflow:hidden;padding:2px 14px}
+.qrow{display:flex;align-items:center;gap:12px;padding:11px 0}
+.qrow+.qrow{border-top:1px solid var(--line)}
+.qb{min-width:38px;height:38px;border-radius:12px;background:var(--amber);color:var(--navy);display:grid;place-items:center;font-weight:800;font-size:18px;padding:0 6px}
+.ql{flex:1;font-weight:600;font-size:15.5px}
+.chip{font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.chip.ok{background:#e7f6ed;color:var(--ok)}.chip.bad{background:#fdecea;color:var(--bad)}
+.rsum{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:var(--r);box-shadow:var(--sh2);padding:14px 16px}
+.rsum small{display:block;color:var(--mute);font-size:12.5px}
+.rsum b{font-size:19px;letter-spacing:-.3px}
+.rsum .rr{text-align:right}.rsum .rr b{color:var(--navy)}
+.hsec{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;margin:20px 2px 10px;letter-spacing:-.2px}
+.step1{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px}
+.hlist .dl li{padding:12px 0}
+.hbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.ord{background:#fff;border-radius:var(--r);box-shadow:var(--sh2);border-left:0;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.ord:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber)}
+.ord.served{opacity:.65}.ord.served:before{background:var(--ok)}
+.ord.cfl:before{background:var(--bad)}
+.oh{gap:12px;align-items:center}
+.oseat{border-radius:14px;min-width:58px;padding:8px 6px;font-size:24px;line-height:1;background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.oseat small{font-size:8.5px;margin-top:3px;letter-spacing:.5px}
+.ometa{display:flex;flex-direction:column;gap:2px}
+.ometa b{font-size:19px;letter-spacing:-.3px}
+.ometa span{font-size:12px;color:var(--mute)}
+.olist{background:#f7f8fa;border-radius:12px;padding:8px 12px;margin:12px 0 0}
+.olist li{font-size:15px;padding:4px 0}
+.olist li b{color:var(--navy)}
+.oact{display:flex;gap:8px;margin-top:12px}
+.oact .tg{flex:1;padding:12px 8px;border-radius:12px;background:#f2f4f7;font-weight:700;font-size:15px;color:var(--ink);transition:background .2s,transform .1s}
+.oact .tg:active{transform:scale(.96)}
+.oact .tg.on{background:var(--ok);color:#fff}
+.oact .del{flex:none;width:48px;border-radius:12px;background:#fdecea;color:var(--bad);font-size:17px;transition:width .2s}
+.oact .del.armed{width:120px;font-size:13px;font-weight:800;background:var(--bad);color:#fff}
+.ord.flash{animation:fl2 1.4s}
+@keyframes fl2{0%{box-shadow:0 0 0 3px var(--amber),var(--sh2)}100%{box-shadow:var(--sh2)}}
+.opts2{padding:0}
+.opts2 details{padding:0 14px;border-bottom:1px solid var(--line)}
+.opts2 summary{padding:14px 0;font-weight:600;list-style:none;cursor:pointer}
+.opts2 summary::-webkit-details-marker{display:none}
+.opts2 textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:16px;margin-bottom:10px;background:#f7f8fa}
+.opts2 details .btn{margin-bottom:14px}
+.orow{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;padding:14px;font-weight:600;font-size:15px;color:var(--ink)}
+.orow+.orow{border-top:1px solid var(--line)}
+.orow span{color:var(--mute);font-size:20px}
+.orow.danger{color:var(--bad)}
+.scanb{justify-content:flex-start;padding:14px 16px}
+.scanb .cl{display:flex;flex-direction:column;line-height:1.2}
+.scanb .cl small{font-size:12px;font-weight:600;opacity:.7}
+/* scanner, native camera UI */
+.scan{background:#000}
+.scan .frame{border:0;box-shadow:0 0 0 2000px rgba(0,0,0,.5);border-radius:28px;top:42%}
+.frame i{position:absolute;width:44px;height:44px;border:5px solid #fff;transition:border-color .2s}
+.frame .c1{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:26px 0 0 0}
+.frame .c2{top:-2px;right:-2px;border-left:0;border-bottom:0;border-radius:0 26px 0 0}
+.frame .c3{bottom:-2px;left:-2px;border-right:0;border-top:0;border-radius:0 0 0 26px}
+.frame .c4{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 26px 0}
+.frame .laser{position:absolute;left:10%;right:10%;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);box-shadow:0 0 12px var(--amber);animation:laser 2.2s ease-in-out infinite}
+@keyframes laser{0%,100%{top:12%}50%{top:86%}}
+.frame.hit i{border-color:#34c759}.frame.hit{animation:hit .6s}
+.frame.miss i{border-color:#ff453a}
+@keyframes hit{30%{transform:translate(-50%,-50%) scale(1.04)}}
+.stopb{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;color:#fff;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+.stitle{font-weight:700;font-size:16px}
+.scx{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:17px;display:grid;place-items:center}
+.scx.on{background:var(--amber);color:var(--navy)}
+.scx[hidden]{visibility:hidden;display:grid}
+.scan .sbar{background:linear-gradient(transparent,rgba(0,0,0,.7) 30%);padding-top:40px}
+.tally{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);color:#fff;border-radius:18px;padding:12px 14px;border:1px solid rgba(255,255,255,.15)}
+.tally .tt b{color:var(--amber);font-size:24px}
+.tally .tts{font-size:17px}
+.chips span{background:rgba(255,255,255,.2);border-radius:8px;padding:3px 8px}
+.chips span.new{background:var(--amber);color:var(--navy);animation:pop2 .3s}
+.tally div[style]{color:rgba(255,255,255,.75)!important}
+.scan .msg{font-size:14px;opacity:.9}
 </style>
 </head>
 <body>
@@ -461,7 +564,8 @@ a.btn{text-decoration:none}
 <div class="toast" id="toast"></div>
 <div class="scan" id="scan">
   <video id="vid" playsinline muted></video>
-  <div class="frame"></div>
+  <div class="frame" id="frame"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><div class="laser"></div></div>
+  <div class="stopb"><button class="scx" id="scanx" aria-label="Fermer">✕</button><span class="stitle">Scanner les commandes</span><button class="scx" id="torch" aria-label="Lampe" hidden>🔦</button></div>
   <div class="sbar">
     <div class="tally" id="tally"></div>
     <div class="msg" id="scanmsg">Placez le code QR du voyageur dans le cadre</div>
@@ -1082,91 +1186,100 @@ function addOrder(o){
 function renderHostess(){
   if(H.tab==="dispo") return renderDispo();
   if(H.tab==="share") return renderShare();
+  window.onscroll=null;
   const list = H.orders.slice().sort((a,b)=>a.seat-b.seat);
   const todo = list.filter(o=>!o.served), done=list.filter(o=>o.served);
   const cashed = H.orders.filter(o=>o.paid).reduce((a,o)=>a+o.total,0);
   const expected = H.orders.reduce((a,o)=>a+o.total,0);
+  const ro = roundOrders();
   const shown = H.tab==="todo"?todo : H.tab==="done"?done : null;
+  const empty = (ico, title, sub) => `<div class="hempty"><div class="hei">${ico}</div><b>${title}</b><span>${sub}</span></div>`;
+  const qtyList = items => `<div class="hlist">${items.map(a=>`<div class="qrow"><span class="qb">${a.q}</span><span class="ql">${esc(a.label)}</span>${a.off?`<span class="chip bad">ÉPUISÉ</span>`:""}</div>`).join("")}</div>`;
   let body;
   if(H.tab==="round"){
-    const ro=roundOrders();
-    if(!ro.length){ body=`<div class="empty">Aucune tournée en cours.<br>Touchez « Scanner » pour commencer une tournée.</div>`; }
+    if(!ro.length){ body=empty("📷","Aucune tournée en cours","Touchez « Scanner » et passez de rangée en rangée. La caméra reste ouverte."); }
     else {
       const tot=ro.reduce((a,o)=>a+o.total,0), unpaid=ro.filter(o=>!o.paid).reduce((a,o)=>a+o.total,0);
       const tm=new Date(H.round.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-      body = `<div class="rhead"><small>Tournée de ${tm}</small><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><span><b>${ro.length}</b> commande${ro.length>1?"s":""}</span><span style="font-weight:700">${fmt(tot)}</span></div><small>À encaisser : ${fmt(unpaid)}</small></div>
-      <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:6px 0 8px">1. À préparer au poste</h3>
-      <div class="card"><ul class="prep big">${aggItems(ro).map(a=>`<li><span>${esc(a.label)}${a.off?` <span class="badge unpaid">ÉPUISÉ</span>`:""}</span><b>× ${a.q}</b></li>`).join("")}</ul></div>
-      <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:16px 0 8px">2. À livrer, dans l'ordre des sièges</h3>
-      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
-      <button class="btn ghost mt" id="resume">📷 Ajouter des commandes à cette tournée</button>
-      <button class="btn mt" id="allserved">✓ Toute la tournée servie</button>`;
+      body = `<div class="rsum"><div><small>Tournée de ${tm}</small><b>${ro.length} commande${ro.length>1?"s":""}</b></div><div class="rr"><b>${fmt(tot)}</b><small>À encaisser ${fmt(unpaid)}</small></div></div>
+      <div class="hsec"><span class="step1">1</span> À préparer au poste</div>
+      ${qtyList(aggItems(ro))}
+      <div class="hsec"><span class="step1">2</span> À livrer, dans l'ordre des sièges</div>
+      <div class="hlist"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      <div class="hbtns"><button class="btn ghost" id="resume">＋ Ajouter à la tournée</button><button class="btn" id="allserved">✓ Tout servi</button></div>`;
     }
   } else if(H.tab==="prep"){
-    const agg={};
-    todo.forEach(o=>o.items.forEach(i=>{ const k=i.id+"."+i.vi; agg[k]=(agg[k]||0)+i.q; }));
-    const ks=Object.keys(agg).sort((a,b)=>agg[b]-agg[a]);
-    body = ks.length ? `<div class="card"><ul class="prep">${ks.map(k=>{const [id,vi]=k.split(".");return `<li><span>${esc(labelOf(id,+vi))}</span><b>× ${agg[k]}</b></li>`;}).join("")}</ul></div>` : `<div class="empty">Rien à préparer pour l'instant.</div>`;
+    const its=aggItems(todo);
+    body = its.length ? `<p class="hnote">Total des articles des commandes non servies.</p>${qtyList(its)}` : empty("🍽️","Rien à préparer","Les articles des commandes à servir apparaîtront ici.");
   } else {
-    body = shown.length ? shown.map(orderCard).join("") : `<div class="empty">${H.tab==="todo"?"Aucune commande en attente.<br>Touchez « Scanner » pour commencer.":"Aucune commande servie."}</div>`;
+    body = shown.length ? shown.map(orderCard).join("") : (H.tab==="todo" ? empty("✅","Aucune commande en attente","Touchez « Scanner » pour commencer une tournée.") : empty("🕓","Aucune commande servie","Les commandes servies apparaîtront ici."));
   }
-  app.innerHTML = header(null, `<span class="seatchip">Hôtesse</span>`) + `<div class="wrap">
+  const seg = (k,label,n) => `<button data-t="${k}" class="${H.tab===k?"on":""}">${label}${n?`<i>${n}</i>`:""}</button>`;
+  app.innerHTML = header(null, `<span class="hchip">Hôtesse</span>`) + `
+  <section class="hhero">
+    <div class="hk">${new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}</div>
+    <div class="ht">Espace hôtesse</div>
     ${dispoBanner()}
-    <div class="stats">
-      <div class="stat"><b>${todo.length}</b><span>À servir</span></div>
-      <div class="stat"><b>${done.length}</b><span>Servies</span></div>
-      <div class="stat"><b style="font-size:16px;line-height:1.75">${fmt(cashed)}</b><span>Encaissé sur ${fmt(expected)}</span></div>
+    <div class="kpis">
+      <div class="kpi"><b>${todo.length}</b><span>À servir</span></div>
+      <div class="kpi"><b>${done.length}</b><span>Servies</span></div>
+      <div class="kpi wide"><b>${fmt(cashed)}</b><span>Encaissé sur ${fmt(expected)}</span></div>
     </div>
-    <div class="tabs">
-      <button data-t="round" class="${H.tab==="round"?"on":""}">Tournée</button>
-      <button data-t="todo" class="${H.tab==="todo"?"on":""}">À servir</button>
-      <button data-t="prep" class="${H.tab==="prep"?"on":""}">À préparer</button>
-      <button data-t="done" class="${H.tab==="done"?"on":""}">Servies</button>
-    </div>
+  </section>
+  <nav class="seg" id="seg">${seg("round","Tournée",ro.length)}${seg("todo","À servir",todo.length)}${seg("prep","Préparer",0)}${seg("done","Servies",done.length)}</nav>
+  <div class="wrap hwrap">
     ${body}
-    <details class="card mt noprint"><summary style="font-weight:600">Saisie manuelle / options</summary>
-      <p style="font-size:13px;color:var(--mute)">Si la caméra ne fonctionne pas, collez ici le texte du code QR.</p>
-      <textarea id="manual" placeholder="ELT1|12|K7QF|p1.0x1"></textarea>
-      <button class="btn ghost mt" id="manualgo">Ajouter la commande</button>
-      <button class="btn ghost mt" id="clear" style="color:var(--bad)">Vider toutes les commandes (fin du trajet)</button>
-    </details>
+    <div class="glabel">Options</div>
+    <div class="group opts2">
+      <details><summary>⌨️ Saisie manuelle d'un code</summary>
+        <p class="hnote">Si la caméra ne fonctionne pas, collez ici le texte du code QR.</p>
+        <textarea id="manual" rows="2" placeholder="ELT1|12|K7QF|p1.0x1"></textarea>
+        <button class="btn ghost" id="manualgo">Ajouter la commande</button>
+      </details>
+      <button class="orow" id="menuday">📋 Menu du jour et QR voyageurs <span>›</span></button>
+      <button class="orow danger" id="clear">🗑️ Vider toutes les commandes (fin du trajet)</button>
+    </div>
     <div class="foot">Les commandes restent enregistrées sur ce téléphone.<br>${powered()}</div>
   </div>`;
-  app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ H.tab=b.dataset.t; renderHostess(); });
+  $("#seg").style.top=$("header.top").offsetHeight+"px";
+  app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ haptic(5); H.tab=b.dataset.t; renderHostess(); });
   $("#dban").onclick=()=>{ haptic(); H.tab = dispoOK() ? "share" : "dispo"; renderHostess(); };
+  $("#menuday").onclick=()=>{ haptic(); H.tab = dispoOK() ? "share" : "dispo"; renderHostess(); };
   app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
     const o=H.orders.find(x=>x.code===b.dataset.code && x.seat===+b.dataset.seat); if(!o) return;
-    const a=b.dataset.act;
+    const a=b.dataset.act; haptic(10);
     if(a==="serve") o.served=!o.served;
     if(a==="pay") o.paid=!o.paid;
     if(a==="del"){
       if(b.dataset.armed){ H.orders=H.orders.filter(x=>x!==o); H.orders.forEach(x=>{ if(x.conflict===o.code && x.seat===o.seat) delete x.conflict; }); }
-      else { b.dataset.armed="1"; b.textContent="Sûr ?"; b.style.width="70px"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent="✕"; b.style.width=""; } },2500); return; }
+      else { b.dataset.armed="1"; b.textContent="Supprimer ?"; b.classList.add("armed"); setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent="🗑"; b.classList.remove("armed"); } },2500); return; }
     }
-    saveH(); renderHostess();
+    saveH(); const y=scrollY; renderHostess(); scrollTo(0,y);
   });
   const rs=$("#resume"); if(rs) rs.onclick=()=>startScan(true);
-  const as=$("#allserved"); if(as) as.onclick=()=>{ roundOrders().forEach(o=>o.served=true); saveH(); toast("Tournée marquée servie"); renderHostess(); };
+  const as=$("#allserved"); if(as) as.onclick=()=>{ haptic(15); roundOrders().forEach(o=>o.served=true); saveH(); toast("Tournée marquée servie ✓"); renderHostess(); };
   $("#manualgo").onclick=()=>{ handleScan($("#manual").value, true); };
   const clr=$("#clear");
-  clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; H.round=null; saveRound(); saveH(); renderHostess(); toast("Commandes vidées"); } else { clr.dataset.armed="1"; clr.textContent="Touchez encore pour confirmer"; } };
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="scanbtn">📷 Nouvelle tournée de scan</button></div>`;
-  $("#scanbtn").onclick=()=>startScan(false);
+  clr.onclick=()=>{ if(clr.dataset.armed){ H.orders=[]; H.round=null; saveRound(); saveH(); renderHostess(); toast("Commandes vidées"); } else { haptic(20); clr.dataset.armed="1"; clr.textContent="⚠️ Touchez encore pour confirmer"; } };
+  bar.innerHTML = `<div class="in"><button class="cartbar show amber scanb" id="scanbtn"><span class="qi">${CAM_ICON}</span><span class="cl">Scanner les commandes<small>${ro.length?"Nouvelle tournée":"Caméra continue, rangée par rangée"}</small></span><span class="chev">›</span></button></div>`;
+  $("#scanbtn").onclick=()=>{ haptic(12); startScan(false); };
   if(H.last){ const el=document.getElementById("o-"+H.last); if(el){ el.classList.add("flash"); el.scrollIntoView({block:"center"}); } H.last=null; }
 }
+const CAM_ICON = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>`;
 function orderCard(o){
   const s=seatInfo(o.seat);
   const time=new Date(o.t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-  return `<div class="ord ${o.served?"served":""}" id="o-${o.seat}-${o.code}">
-    <div class="oh"><div class="oseat">${o.seat}<small>${s.type.toUpperCase()}</small></div>
-      <div class="ometa"><b>${fmt(o.total)}</b>${o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">NON PAYÉ</span>`}<br>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</div></div>
-    <ul class="olist">${o.items.map(i=>`<li><span>${i.q} × ${esc(labelOf(i.id,i.vi))}${offMark(i)}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
+  const st = o.served ? `<span class="chip ok">Servi</span>` : o.paid ? `<span class="chip ok">Payé</span>` : `<span class="chip bad">À payer</span>`;
+  return `<div class="ord ${o.served?"served":""} ${o.conflict?"cfl":""}" id="o-${o.seat}-${o.code}">
+    <div class="oh"><div class="oseat">${o.seat}<small>${s.type==="Fenêtre"?"FENÊTRE":"COULOIR"}</small></div>
+      <div class="ometa"><b>${fmt(o.total)}</b><span>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</span></div>${st}</div>
+    <ul class="olist">${o.items.map(i=>`<li><span><b>${i.q}×</b> ${esc(labelOf(i.id,i.vi))}${offMark(i)}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
     ${o.note?`<div class="onote">📝 ${esc(o.note)}</div>`:""}
     ${o.conflict?`<div class="conf">⚠ Deux commandes pour le siège ${o.seat} (#${esc(o.code)} et #${esc(o.conflict)}). Même voyageur ? Sinon, vérifiez les billets et supprimez la mauvaise commande.</div>`:""}
     <div class="oact">
-      <button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.paid?"on":""}">${o.paid?"✓ Payé":"Marquer payé"}</button>
-      <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.served?"on":""}">${o.served?"✓ Servi":"Marquer servi"}</button>
-      <button data-act="del" data-code="${esc(o.code)}" data-seat="${o.seat}" class="del" aria-label="Supprimer">✕</button>
+      <button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.paid?"on":""}">💵 ${o.paid?"Payé ✓":"Payé"}</button>
+      <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="tg ${o.served?"on":""}">🍽️ ${o.served?"Servi ✓":"Servi"}</button>
+      <button data-act="del" data-code="${esc(o.code)}" data-seat="${o.seat}" class="del" aria-label="Supprimer">🗑</button>
     </div></div>`;
 }
 let lastScan={txt:"",t:0};
@@ -1174,7 +1287,7 @@ function handleScan(txt, manual){
   if(!manual && txt===lastScan.txt && Date.now()-lastScan.t<4000) return;
   lastScan={txt,t:Date.now()};
   const o=parsePayload(txt);
-  if(!o){ beep(false); toast("Code non reconnu", true); return; }
+  if(!o){ beep(false); toast("Code non reconnu", true); const fr=$("#frame"); if(fr){ fr.classList.remove("hit","miss"); void fr.offsetWidth; fr.classList.add("miss"); } return; }
   if(o.seat>NSEATS) { /* accepté quand même */ }
   const r=addOrder(o);
   try{ navigator.vibrate && navigator.vibrate(r.dup?[40,60,40]:120); }catch(e){}
@@ -1190,6 +1303,7 @@ function handleScan(txt, manual){
   if(!H.round.keys.includes(key)){ H.round.keys.push(key); }
   saveRound();
   H.last=key; H.lastNew=key; H.tab="round";
+  const fr=$("#frame"); if(fr){ fr.classList.remove("hit","miss"); void fr.offsetWidth; fr.classList.add(r.conflict||offs.length?"miss":"hit"); }
   $("#scanmsg").textContent = r.dup ? `Siège ${o.seat} déjà scanné. Passez au voyageur suivant.` : `Siège ${o.seat} ajouté. Passez au voyageur suivant ou terminez la tournée.`;
   renderTally();
   if(manual) renderHostess();
@@ -1197,7 +1311,7 @@ function handleScan(txt, manual){
 let stream=null, scanning=false, detector=null;
 function renderTally(){
   const ro=roundOrders(), tot=ro.reduce((a,o)=>a+o.total,0);
-  $("#tally").innerHTML = `<div class="tt"><span><b>${ro.length}</b> commande${ro.length>1?"s":""} scannée${ro.length>1?"s":""}</span><span>${fmt(tot)}</span></div>` +
+  $("#tally").innerHTML = `<div class="tt"><span><b>${ro.length}</b> commande${ro.length>1?"s":""}</span><span class="tts">${fmt(tot)}</span></div>` +
     (ro.length?`<div class="chips">${ro.map(o=>`<span class="${okey(o)===H.lastNew?"new":""}">${o.seat}</span>`).join("")}</div>`:`<div style="font-size:12px;color:var(--mute);margin-top:4px">Scannez les voyageurs les uns après les autres, la caméra reste ouverte.</div>`);
 }
 async function startScan(resume){
@@ -1210,13 +1324,14 @@ async function startScan(resume){
     stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment", width:{ideal:1280}}, audio:false});
   }catch(e){ toast("Caméra indisponible : autorisez l'accès ou utilisez la saisie manuelle", true); return; }
   vid.srcObject=stream; await vid.play().catch(()=>{});
-  sc.classList.add("on"); scanning=true;
+  sc.classList.add("on"); scanning=true; document.body.style.overflow="hidden";
+  try{ const tr=stream.getVideoTracks()[0], cap=tr.getCapabilities&&tr.getCapabilities(); const tb=$("#torch"); tb.hidden=!(cap&&cap.torch); let on=false; tb.onclick=()=>{ on=!on; tr.applyConstraints({advanced:[{torch:on}]}).catch(()=>{}); tb.classList.toggle("on",on); }; }catch(e){}
   $("#scanmsg").textContent="Placez le code QR du voyageur dans le cadre";
   try{ if("BarcodeDetector" in window){ const f=await BarcodeDetector.getSupportedFormats(); if(f.includes("qr_code")) detector=new BarcodeDetector({formats:["qr_code"]}); } }catch(e){ detector=null; }
   loop();
 }
 function stopScan(){
-  scanning=false; $("#scan").classList.remove("on");
+  scanning=false; $("#scan").classList.remove("on"); document.body.style.overflow="";
   if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
   H.tab = roundOrders().length ? "round" : "todo"; H.last=null;
   renderHostess();
@@ -1240,7 +1355,7 @@ async function loop(){
   }
   setTimeout(()=>requestAnimationFrame(loop), 120);
 }
-$("#scanclose").onclick=stopScan;
+$("#scanclose").onclick=stopScan; $("#scanx").onclick=stopScan;
 
 /* =====================================================
    ADMIN : planche de QR codes à coller au dos des sièges
