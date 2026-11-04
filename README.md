@@ -76,8 +76,8 @@ Without `config.js` values, the app works offline as before (shareable link / QR
 ## Editing
 
 - **Menu, prices, seat count, company name:** edit `src/app.html` (the `MENU` list and the config constants at the top of the script), then run `python3 build.py` to regenerate `index.html`.
-- **Brand colors:** the 4 CSS variables at the top of `src/app.html` (`--navy`, `--navy2`, `--amber`, `--amber-d`).
-- **Logo:** add the official logo as `logo.png` at the root of the repo. It appears automatically (a fallback "E" badge shows until then).
+- **Brand colors (from the official Elitis logo):** brown `#26130c`, orange `#fe5915`, yellow `#f3f56b`, set as CSS variables at the top of `src/app.html`. Orange buttons use brown text for readability (5.6:1 contrast).
+- **Logo:** the official Elitis Express logo is `logo.png` at the root (header, welcome screen, printed seat cards).
 
 `index.html` is self-contained (QR generator and scanner libraries are inlined), so it is the only file GitHub Pages needs.
 
