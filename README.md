@@ -27,6 +27,10 @@ Add `&n=54` to any link to set the number of seats (default 54).
 
 Travelers can browse the menu freely. The first time they tap "+", a seat picker opens (bottom sheet, 60 seats by default, window/aisle filter). Nothing is added until a seat is confirmed. Travelers arriving from a seat-back QR code (`?s=12`) skip this step.
 
+## Show the hostess
+
+Once items are in the cart, a **Hôtesse** QR button sits next to the cart bar, and the order screen's main button is **Montrer à l'hôtesse**. It opens the selection with its QR code (seat required). **Afficher en grand** (or tapping the QR) shows a full-screen white QR for easy scanning, and the screen is kept awake where supported.
+
 ## Menu du jour (daily availability)
 
 - Each day, before the first scan, the hostess must confirm the "Menu du jour" (switches per item and per size/option). Scanning is blocked until it is confirmed.

@@ -434,6 +434,25 @@ a.btn{text-decoration:none}
 .soldout{font-size:12px;font-weight:700;color:var(--bad);background:#fdecea;border-radius:999px;padding:6px 10px;white-space:nowrap}
 .item.off .thumb{filter:grayscale(1);opacity:.5}.item.off .iname,.item.off .iprice{color:var(--mute)}
 .opt .soldout{padding:5px 9px}
+
+.bar .in.duo{display:flex;gap:10px}
+.bar .in.duo .cartbar{flex:1}
+.qrbtn{flex:none;width:64px;border-radius:20px;background:var(--amber);color:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 12px 30px rgba(245,165,36,.45);transition:transform .12s}
+.qrbtn:active{transform:scale(.95)}
+.qrbtn small{font-size:10.5px;font-weight:800}
+.qrbtn.enter{animation:slideup .4s .05s cubic-bezier(.2,.9,.25,1.2) both}
+.qi{display:inline-grid;place-items:center}
+.cartbar.amber .qi{margin-right:-2px}
+.btn.big{padding:17px;font-size:17px;margin-bottom:14px;box-shadow:0 10px 26px rgba(245,165,36,.4)}
+.ticket .qr{cursor:zoom-in}
+.fsqr{position:fixed;inset:0;z-index:90;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));animation:fade .2s both}
+.fsh{font-weight:700;color:var(--mute);font-size:15px}
+.fss{display:flex;align-items:baseline;gap:10px;background:var(--navy);color:#fff;border-radius:18px;padding:10px 20px}
+.fss small{font-size:12px;letter-spacing:1px;opacity:.75}.fss b{font-size:44px;color:var(--amber);line-height:1}.fss span{font-weight:700}
+.fsq{width:min(88vw,62vh);max-width:520px}.fsq svg{width:100%;height:auto;display:block}
+.fsc{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:17px;letter-spacing:1px}
+.fsqr .btn{max-width:320px}
+.cartbar .cl,.cartbar .sp{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -495,6 +514,7 @@ const I18N = {
     hello:"Bon appétit 👋", heroTitle:"Que souhaitez-vous déguster\u00a0?", menu:"Menu",
     deliverTo:"Livraison à votre place", items:"Articles", subtotal:"Sous-total", payHostess:"Paiement à l'hôtesse, à la livraison",
     readyTitle:"Votre commande est prête", readySub:"Montrez ce code à l'hôtesse",
+    showHostess:"Montrer à l'hôtesse", hostessShort:"Hôtesse", fullscreen:"Afficher en grand pour l'hôtesse", fsHint:"Présentez cet écran à l'hôtesse", itemsShort:"article(s)",
     seatFirst:"Avant d'ajouter un article, sélectionnez votre siège. L'hôtesse vous servira directement à votre place.",
     confirmSeat:"Confirmer le siège", pickSeatChip:"Choisir mon siège", close:"Fermer",
     lockedSeat:"Votre siège est défini par le code QR de votre siège. Si ce n'est pas votre place, scannez le code QR de votre propre siège."
@@ -524,6 +544,7 @@ const I18N = {
     hello:"Enjoy your meal 👋", heroTitle:"What would you like to eat?", menu:"Menu",
     deliverTo:"Delivered to your seat", items:"Items", subtotal:"Subtotal", payHostess:"Pay the hostess on delivery",
     readyTitle:"Your order is ready", readySub:"Show this code to the hostess",
+    showHostess:"Show the hostess", hostessShort:"Hostess", fullscreen:"Show full screen to the hostess", fsHint:"Show this screen to the hostess", itemsShort:"item(s)",
     seatFirst:"Before adding an item, select your seat. The hostess will serve you right at your seat.",
     confirmSeat:"Confirm seat", pickSeatChip:"Choose my seat", close:"Close",
     lockedSeat:"Your seat is set by the QR code on your seat. If this is not your seat, scan the QR code on your own seat."
@@ -867,7 +888,8 @@ function bindSteppers(root, after){
 function menuBar(){
   const c=cartCount();
   const was = bar.querySelector(".cartbar.show");
-  bar.innerHTML = c ? `<div class="in"><button class="cartbar show ${was?"":"enter"}" id="go"><span class="cnt">${c}</span><span class="cl">${t("viewOrder")}</span><span class="sp">${fmt(cartTotal())}</span><span class="chev">›</span></button></div>` : "";
+  bar.innerHTML = c ? `<div class="in duo"><button class="cartbar show ${was?"":"enter"}" id="go"><span class="cnt">${c}</span><span class="cl">${t("myOrder")}</span><span class="sp">${fmt(cartTotal())}</span></button><button class="qrbtn ${was?"":"enter"}" id="showh" aria-label="${esc(t("showHostess"))}"><span class="qi">${QR_ICON}</span><small>${t("hostessShort")}</small></button></div>` : "";
+  const sh=$("#showh"); if(sh) sh.onclick=showHostess;
   const g=$("#go"); if(g){ if(was){ g.classList.add("bump"); } g.onclick=()=>{ haptic(); if(!T.seat){ openSeatSheet(()=>{ T.view="cart"; renderTraveler(); }, "add"); return; } T.view="cart"; renderTraveler(); }; }
 }
 function backBar(label, to){ return `<div class="navrow"><button class="back" id="back">‹ ${label}</button></div>`; }
@@ -892,8 +914,33 @@ function viewCart(){
   $("#more").onclick=()=>{ T.view="menu"; renderTraveler(); };
   $("#note").oninput=e=>{ T.note=e.target.value; saveT(); };
   bindSteppers(app, ()=>{ const y=scrollY; viewCart(); bindLang(app, renderTraveler); window.scrollTo(0,y); });
-  bar.innerHTML = `<div class="in"><button class="cartbar show amber" id="go"><span class="cl">${t("genQR")}</span><span class="sp">${fmt(cartTotal())}</span><span class="chev">›</span></button></div>`;
-  $("#go").onclick=()=>{ haptic(15); if(!T.seat){ openSeatSheet(()=>$("#go").click(), "add"); return; } if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); confetti({n:60, y:innerHeight*0.3, power:7}); };
+  bar.innerHTML = `<div class="in"><button class="cartbar show amber" id="go"><span class="qi">${QR_ICON}</span><span class="cl">${t("showHostess")}</span><span class="sp">${fmt(cartTotal())}</span></button></div>`;
+  $("#go").onclick=showHostess;
+}
+const QR_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 14v.01M14 21h3M20 18v3M17 17h.01"/></svg>`;
+/* « Montrer à l'hôtesse » : affiche la sélection + QR code (siège obligatoire) */
+function showHostess(){
+  haptic(15);
+  if(!cartCount()) return;
+  if(!T.seat){ openSeatSheet(showHostess, "add"); return; }
+  const first=!T.code;
+  if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler();
+  if(first) confetti({n:60, y:innerHeight*0.3, power:7});
+}
+let wakeLock=null;
+async function keepAwake(on){ try{ if(on && "wakeLock" in navigator){ wakeLock=await navigator.wakeLock.request("screen"); } else if(!on && wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){} }
+function openFullQR(){
+  haptic(10);
+  const s=seatInfo(T.seat);
+  const ov=document.createElement("div"); ov.className="fsqr"; ov.id="fsqr";
+  ov.innerHTML=`<div class="fsh">${t("fsHint")}</div>
+    <div class="fss"><small>${t("seatUp")}</small><b>${s.n}</b><span>${seatType(s)}</span></div>
+    <div class="fsq">${qrSvg(buildPayload())}</div>
+    <div class="fsc">${T.code} · ${cartCount()} ${t("itemsShort")} · ${fmt(cartTotal())}</div>
+    <button class="btn" id="fsx">${t("close")}</button>`;
+  document.body.appendChild(ov); document.body.style.overflow="hidden";
+  try{ ov.requestFullscreen && ov.requestFullscreen().catch(()=>{}); }catch(e){}
+  ov.querySelector("#fsx").onclick=()=>{ try{ document.fullscreenElement && document.exitFullscreen(); }catch(e){} ov.remove(); document.body.style.overflow=""; };
 }
 function newCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; for(let i=0;i<4;i++) c+=a[Math.floor(Math.random()*a.length)]; return c; }
 function buildPayload(){
@@ -906,9 +953,10 @@ function viewQR(){
   const s=seatInfo(T.seat), lines=cartLines();
   app.innerHTML = header() + `<div class="wrap">
     <div class="done"><div class="dk">✓</div><div><b>${t("readyTitle")}</b><small>${t("readySub")}</small></div></div>
+    <button class="btn amber big" id="fs"><span class="qi">${QR_ICON}</span> ${t("fullscreen")}</button>
     <div class="ticket">
       <div class="th"><div class="thl"><small>${t("seatUp")}</small><div class="big">${s.n}</div></div><div class="thr"><small>${COMPANY.toUpperCase()}</small><b>${seatType(s)}</b><span>${t("row")} ${s.row} · ${s.side==="Gauche"?t("sideL"):t("sideR")}</span></div></div>
-      <div class="qr">${qrSvg(buildPayload())}</div>
+      <div class="qr" id="qrtap" role="button" aria-label="${esc(t("fullscreen"))}">${qrSvg(buildPayload())}</div>
       <div class="code">${T.code}</div>
       <div class="tear"></div>
       <div class="tb">
@@ -922,7 +970,9 @@ function viewQR(){
     <div class="foot">${t("orderN")} ${T.code} · ${COMPANY}<br>${t("thanks")}<br>${powered()}</div>
   </div>`;
   bar.innerHTML="";
-  $("#edit").onclick=()=>{ haptic(); T.view="cart"; renderTraveler(); };
+  $("#fs").onclick=openFullQR; $("#qrtap").onclick=openFullQR;
+  keepAwake(true);
+  $("#edit").onclick=()=>{ haptic(); keepAwake(false); T.view="cart"; renderTraveler(); };
   $("#reset").onclick=()=>{ haptic(); T.cart={}; T.note=""; T.code=null; saveT(); T.view="menu"; renderTraveler(); };
 }
 
