@@ -193,6 +193,43 @@ label.lb{display:block;font-weight:600;margin:16px 0 6px;font-size:14px}
   .qcard{border-radius:4mm}
 }
 .foot{text-align:center;font-size:11px;color:var(--mute);margin:24px 0 8px}
+
+/* ===== Accueil / confettis / langue / TIBLOGICS ===== */
+.splash{position:fixed;inset:0;z-index:70;background:radial-gradient(120% 80% at 50% 28%,var(--navy2) 0%,var(--navy) 62%,#081426 100%);color:#fff;display:flex;flex-direction:column;transition:transform .75s cubic-bezier(.7,0,.25,1),opacity .75s;overflow:auto}
+.splash.out{transform:translateY(-104%);opacity:.7}
+.splash .stop{display:flex;justify-content:flex-end;padding:14px 16px 0}
+.splash .sbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 26px}
+.splash .slogo .logo{height:64px;min-width:64px;border-radius:16px;padding:6px 12px;box-shadow:0 8px 30px rgba(0,0,0,.35);animation:pop .7s both}
+.splash .slogo .logo.txt{font-size:32px}
+.splash .slogo .logo img{max-width:200px}
+.splash .w1{font-size:36px;font-weight:800;line-height:1.05;margin-top:26px;animation:pop .7s both .25s}
+.splash .w2{font-size:22px;font-weight:700;color:var(--amber);margin-top:6px;animation:pop .7s both .4s}
+.splash .w3{font-style:italic;opacity:.85;margin-top:6px;animation:pop .7s both .55s}
+.splash .w4{max-width:330px;opacity:.9;margin:18px 0 0;font-size:15px;animation:pop .7s both .7s}
+.splash .sseat{margin-top:18px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:8px 16px;border-radius:22px;animation:pop .7s both .85s}
+.splash .sseat b{color:var(--amber);font-size:18px}
+.splash .cta{margin-top:26px;max-width:330px;animation:pop .7s both 1s, glow 2.4s ease-in-out 1.8s infinite}
+.splash .sfoot{text-align:center;padding:12px 0 calc(18px + env(safe-area-inset-bottom));font-size:12px;opacity:.9}
+.splash .tib{color:#fff}
+@keyframes pop{0%{opacity:0;transform:translateY(16px) scale(.96)}100%{opacity:1;transform:none}}
+@keyframes glow{0%,100%{box-shadow:0 6px 16px rgba(245,165,36,.25)}50%{box-shadow:0 6px 28px rgba(245,165,36,.65)}}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}
+.unroll .row,.unroll .item,.unroll .sec h3,.unroll .cats button,.unroll .pref,.unroll .legend,.unroll .wrap>h2,.unroll .wrap>p.lead{animation:unroll .55s cubic-bezier(.2,.8,.2,1) both;transform-origin:top center}
+@keyframes unroll{from{opacity:0;transform:perspective(700px) rotateX(-75deg) translateY(-10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.unroll *,.splash *{animation:none!important}.splash{transition:none}}
+.langbtn{display:flex;gap:2px;background:rgba(255,255,255,.12);border-radius:20px;padding:3px;margin-left:8px;flex:none}
+.langbtn b{font-size:11px;padding:4px 7px;border-radius:16px;opacity:.7}
+.langbtn b.on{background:var(--amber);color:var(--navy);opacity:1}
+.seatchip{margin-left:auto}
+.brand .seatchip + .langbtn{margin-left:6px}
+.brand > div:nth-child(2) + .langbtn{margin-left:auto}
+.pw{display:inline-flex;align-items:center;gap:6px}
+.tibl{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
+.tibl img{height:16px;width:auto;display:block}
+.tib{font-weight:800;letter-spacing:1.6px;font-size:12px;color:var(--navy)}
+.conf{background:#fdecea;color:#9b1c14;border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px;font-weight:600}
+.brand h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+.qpw{font-size:8px;color:#777;margin-top:2px;letter-spacing:.5px}
 </style>
 </head>
 <body>
@@ -226,56 +263,119 @@ const LOGO = `<div class="logo"><img src="${LOGO_FILE}" alt="Elitis Express" one
 const CATERER = "Hôtels Tanoudja";
 const PAYLOAD_PREFIX = "ELT1";
 
-/* ============ MENU (source : carte Hôtels Tanoudja) ============ */
+/* ============ LANGUE / LANGUAGE ============
+   Français par défaut, anglais en option (bouton FR/EN). Les écrans hôtesse et admin restent en français. */
+const I18N = {
+  fr:{
+    sub:"Menu à bord", tagline:"La passion du voyage",
+    welcome:"Bienvenue à bord", welcomeOf:"d'Elitis Express",
+    welcomeLead:"Installez-vous confortablement. Votre repas se commande ici, l'hôtesse vous le sert à votre place.",
+    yourSeat:"Votre siège", ctaMenu:"Découvrir le menu", ctaSeat:"Choisir mon siège",
+    poweredBy:"Propulsé par",
+    chooseSeat:"Choisissez votre siège", seatLead:"Touchez le siège indiqué sur votre billet. L'hôtesse vous servira directement à votre place.",
+    all:"Tous", window:"Fenêtre", aisle:"Couloir", winShort:"Fenêtre", aisleShort:"Couloir",
+    front:"AVANT DU BUS", door:"Porte ▸", back:"ARRIÈRE", aisleLbl:"ALLÉE",
+    seat:"Siège", selectSeat:"Sélectionnez un siège", seeMenu:"Voir le menu ›",
+    row:"Rangée", sideL:"Côté gauche", sideR:"Côté droit",
+    remove:"Retirer", add:"Ajouter",
+    viewOrder:"Voir ma commande", addItems:"Ajoutez des articles",
+    menuFoot:"Carte Hôtels Tanoudja · Prix en FCFA · Paiement auprès de l'hôtesse",
+    myOrder:"Ma commande", checkLead:"Vérifiez avant de générer votre code.", total:"Total",
+    noteLbl:"Remarque pour l'hôtesse (facultatif)", notePh:"Ex. : sans piment, sauce à part, monnaie sur 10 000 F…",
+    addMore:"+ Ajouter d'autres articles", genQR:"Générer mon code QR",
+    seatUp:"SIÈGE", toPay:"À payer",
+    tip:"Gardez cet écran ouvert. Quand l'hôtesse arrive à votre rangée, montrez-lui ce code : elle le scanne et reçoit votre commande. Pensez à augmenter la luminosité de votre écran.",
+    edit:"Modifier ma commande", reset:"Nouvelle commande", orderN:"Commande", thanks:"Merci de voyager avec nous. La passion du voyage !",
+    unknown:"Article inconnu",
+    lockedSeat:"Votre siège est défini par le code QR de votre siège. Si ce n'est pas votre place, scannez le code QR de votre propre siège."
+  },
+  en:{
+    sub:"Onboard menu", tagline:"The passion for travel",
+    welcome:"Welcome aboard", welcomeOf:"Elitis Express",
+    welcomeLead:"Sit back and relax. Order your meal here and the hostess will serve you at your seat.",
+    yourSeat:"Your seat", ctaMenu:"Discover the menu", ctaSeat:"Choose my seat",
+    poweredBy:"Powered by",
+    chooseSeat:"Choose your seat", seatLead:"Tap the seat shown on your ticket. The hostess will serve you right at your seat.",
+    all:"All", window:"Window", aisle:"Aisle", winShort:"Window", aisleShort:"Aisle",
+    front:"FRONT OF BUS", door:"Door ▸", back:"REAR", aisleLbl:"AISLE",
+    seat:"Seat", selectSeat:"Select a seat", seeMenu:"See the menu ›",
+    row:"Row", sideL:"Left side", sideR:"Right side",
+    remove:"Remove", add:"Add",
+    viewOrder:"View my order", addItems:"Add some items",
+    menuFoot:"Hôtels Tanoudja menu · Prices in FCFA · Pay the hostess",
+    myOrder:"My order", checkLead:"Check your order before generating your code.", total:"Total",
+    noteLbl:"Note for the hostess (optional)", notePh:"E.g. no chili, sauce on the side, change for 10,000 F…",
+    addMore:"+ Add more items", genQR:"Generate my QR code",
+    seatUp:"SEAT", toPay:"To pay",
+    tip:"Keep this screen open. When the hostess reaches your row, show her this code: she scans it and receives your order. Turn up your screen brightness.",
+    edit:"Edit my order", reset:"New order", orderN:"Order", thanks:"Thank you for travelling with us. The passion for travel!",
+    unknown:"Unknown item",
+    lockedSeat:"Your seat is set by the QR code on your seat. If this is not your seat, scan the QR code on your own seat."
+  }
+};
+const params = new URLSearchParams(location.search);
+const MODE = (params.get("mode")||"").toLowerCase();
+const urlLang = (params.get("lang")||"").toLowerCase();
+let LANG = MODE ? "fr" : (urlLang==="en"||urlLang==="fr" ? urlLang : (()=>{ try{ return localStorage.getItem("elt_lang")||"fr"; }catch(e){ return "fr"; } })());
+const t = k => (I18N[LANG]&&I18N[LANG][k]) || I18N.fr[k] || k;
+function setLang(l){ LANG=l; try{ localStorage.setItem("elt_lang",l); }catch(e){} document.documentElement.lang=l; }
+document.documentElement.lang = LANG;
+
+/* ============ MENU (source : carte Hôtels Tanoudja) ============
+   name/desc = français, en/den = anglais */
 const CATS = [
-  {id:"poulet", label:"Poulets"},
-  {id:"grill",  label:"Grillades & sautés"},
-  {id:"snack",  label:"Snacks"},
-  {id:"pizza",  label:"Pizzas"},
-  {id:"acc",    label:"Accompagnements"}
+  {id:"poulet", label:"Poulets", en:"Chicken"},
+  {id:"grill",  label:"Grillades & sautés", en:"Grills & sautés"},
+  {id:"snack",  label:"Snacks", en:"Snacks"},
+  {id:"pizza",  label:"Pizzas", en:"Pizzas"},
+  {id:"acc",    label:"Accompagnements", en:"Sides"}
 ];
 const MENU = [
-  {id:"p1",cat:"poulet",name:"Poulet Tanoudja",price:7000,desc:"La spécialité de la maison"},
-  {id:"p2",cat:"poulet",name:"Poulet pané entier",price:6000},
-  {id:"p3",cat:"poulet",name:"Pané ¼ + frites",price:2500},
-  {id:"p4",cat:"poulet",name:"Pané au sésame",price:6500},
-  {id:"p5",cat:"poulet",name:"Pané au sésame ¼ + frites",price:3000},
-  {id:"p6",cat:"poulet",name:"Poulet rôti Boromo",v:[["Petit",5000],["Grand",6000]]},
-  {id:"p7",cat:"poulet",name:"Poulet braisé",v:[["Petit",5000],["Grand",6000]]},
-  {id:"p8",cat:"poulet",name:"Poulet télévisé",v:[["Petit",5000],["Moyen",6000],["Grand",7000]]},
-  {id:"p9",cat:"poulet",name:"Poulet sauté",price:6000},
-  {id:"g1",cat:"grill",name:"Brochettes de filet de bœuf + frites",price:6000},
-  {id:"g2",cat:"grill",name:"Poisson braisé (Samandeni)",v:[["Petit",3000],["Moyen",4000],["Grand",5000]]},
-  {id:"g3",cat:"grill",name:"Gésier télévisé",price:250,desc:"Prix à l'unité"},
-  {id:"g4",cat:"grill",name:"Gésier sauté",price:2500},
-  {id:"g5",cat:"grill",name:"Langue de bœuf sautée",price:3000},
-  {id:"g6",cat:"grill",name:"Foie sauté",price:2500},
-  {id:"g7",cat:"grill",name:"Mouton frit",price:2500},
-  {id:"s1",cat:"snack",name:"Chawarma poulet",price:2000},
-  {id:"s2",cat:"snack",name:"Chawarma poisson / viande",choice:1,cname:"Chawarma ",v:[["Poisson",1500],["Viande",1500]]},
-  {id:"s3",cat:"snack",name:"Hamburger",price:2500},
-  {id:"s4",cat:"snack",name:"Pain anglais",price:1000},
-  {id:"s5",cat:"snack",name:"Nems (4 unités)",price:2000},
-  {id:"z1",cat:"pizza",name:"Pizza Margherita",price:4000,desc:"Sauce tomate, fromage"},
-  {id:"z2",cat:"pizza",name:"Pizza viande hachée",price:5000,desc:"Sauce tomate, viande hachée, fromage, légumes"},
-  {id:"z3",cat:"pizza",name:"Pizza Reine",v:[["Jambon",6000],["Saucisson",6000]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires"},
-  {id:"z4",cat:"pizza",name:"Pizza Royale",v:[["Jambon",6500],["Saucisson",6500]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires, œuf"},
-  {id:"z5",cat:"pizza",name:"Pizza Tanoudja",price:7000,desc:"Sauce tomate, viande hachée, légumes, fromage, gésier"},
-  {id:"a1",cat:"acc",name:"Frites / Alloco",choice:1,v:[["Frites",1000],["Alloco",1000]]},
-  {id:"a2",cat:"acc",name:"Attiéké / Riz blanc",choice:1,v:[["Attiéké",1000],["Riz blanc",1000]]}
+  {id:"p1",cat:"poulet",name:"Poulet Tanoudja",en:"Tanoudja chicken",price:7000,desc:"La spécialité de la maison",den:"The house specialty"},
+  {id:"p2",cat:"poulet",name:"Poulet pané entier",en:"Whole breaded chicken",price:6000},
+  {id:"p3",cat:"poulet",name:"Pané ¼ + frites",en:"Breaded chicken ¼ + fries",price:2500},
+  {id:"p4",cat:"poulet",name:"Pané au sésame",en:"Sesame breaded chicken",price:6500},
+  {id:"p5",cat:"poulet",name:"Pané au sésame ¼ + frites",en:"Sesame breaded chicken ¼ + fries",price:3000},
+  {id:"p6",cat:"poulet",name:"Poulet rôti Boromo",en:"Boromo roast chicken",v:[["Petit",5000],["Grand",6000]]},
+  {id:"p7",cat:"poulet",name:"Poulet braisé",en:"Flame-grilled chicken",v:[["Petit",5000],["Grand",6000]]},
+  {id:"p8",cat:"poulet",name:"Poulet télévisé",en:"Rotisserie chicken (télévisé)",v:[["Petit",5000],["Moyen",6000],["Grand",7000]]},
+  {id:"p9",cat:"poulet",name:"Poulet sauté",en:"Sautéed chicken",price:6000},
+  {id:"g1",cat:"grill",name:"Brochettes de filet de bœuf + frites",en:"Beef fillet skewers + fries",price:6000},
+  {id:"g2",cat:"grill",name:"Poisson braisé (Samandeni)",en:"Flame-grilled fish (Samandeni)",v:[["Petit",3000],["Moyen",4000],["Grand",5000]]},
+  {id:"g3",cat:"grill",name:"Gésier télévisé",en:"Rotisserie gizzard",price:250,desc:"Prix à l'unité",den:"Price per piece"},
+  {id:"g4",cat:"grill",name:"Gésier sauté",en:"Sautéed gizzards",price:2500},
+  {id:"g5",cat:"grill",name:"Langue de bœuf sautée",en:"Sautéed beef tongue",price:3000},
+  {id:"g6",cat:"grill",name:"Foie sauté",en:"Sautéed liver",price:2500},
+  {id:"g7",cat:"grill",name:"Mouton frit",en:"Fried mutton",price:2500},
+  {id:"s1",cat:"snack",name:"Chawarma poulet",en:"Chicken shawarma",price:2000},
+  {id:"s2",cat:"snack",name:"Chawarma poisson / viande",en:"Fish / meat shawarma",choice:1,cname:"Chawarma ",cen:"Shawarma, ",v:[["Poisson",1500],["Viande",1500]]},
+  {id:"s3",cat:"snack",name:"Hamburger",en:"Hamburger",price:2500},
+  {id:"s4",cat:"snack",name:"Pain anglais",en:"Sandwich loaf (pain anglais)",price:1000},
+  {id:"s5",cat:"snack",name:"Nems (4 unités)",en:"Spring rolls (4 pieces)",price:2000},
+  {id:"z1",cat:"pizza",name:"Pizza Margherita",en:"Margherita pizza",price:4000,desc:"Sauce tomate, fromage",den:"Tomato sauce, cheese"},
+  {id:"z2",cat:"pizza",name:"Pizza viande hachée",en:"Minced meat pizza",price:5000,desc:"Sauce tomate, viande hachée, fromage, légumes",den:"Tomato sauce, minced meat, cheese, vegetables"},
+  {id:"z3",cat:"pizza",name:"Pizza Reine",en:"Reine pizza",v:[["Jambon",6000],["Saucisson",6000]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires",den:"Tomato sauce, mushrooms, vegetables, cheese, black olives"},
+  {id:"z4",cat:"pizza",name:"Pizza Royale",en:"Royale pizza",v:[["Jambon",6500],["Saucisson",6500]],desc:"Sauce tomate, champignons, légumes, fromage, olives noires, œuf",den:"Tomato sauce, mushrooms, vegetables, cheese, black olives, egg"},
+  {id:"z5",cat:"pizza",name:"Pizza Tanoudja",en:"Tanoudja pizza",price:7000,desc:"Sauce tomate, viande hachée, légumes, fromage, gésier",den:"Tomato sauce, minced meat, vegetables, cheese, gizzard"},
+  {id:"a1",cat:"acc",name:"Frites / Alloco",en:"Fries / Alloco",choice:1,v:[["Frites",1000],["Alloco",1000]]},
+  {id:"a2",cat:"acc",name:"Attiéké / Riz blanc",en:"Attiéké / White rice",choice:1,v:[["Attiéké",1000],["Riz blanc",1000]]}
 ];
+const VEN = {Petit:"Small",Moyen:"Medium",Grand:"Large",Poisson:"Fish",Viande:"Meat",Jambon:"Ham",Saucisson:"Sausage",Frites:"Fries",Alloco:"Alloco (fried plantain)","Attiéké":"Attiéké (cassava couscous)","Riz blanc":"White rice"};
 const BY_ID = Object.fromEntries(MENU.map(m=>[m.id,m]));
+const L = (fr,en) => LANG==="en" && en ? en : fr;
+const nameOf = m => L(m.name, m.en);
+const descOf = m => L(m.desc, m.den);
+const vlab = v => L(v, VEN[v]);
+const catLabel = c => L(c.label, c.en);
 function variants(m){ return m.v ? m.v : [[null,m.price]]; }
 function priceOf(id,vi){ const m=BY_ID[id]; return m ? variants(m)[vi]?.[1] ?? 0 : 0; }
-function labelOf(id,vi){ const m=BY_ID[id]; if(!m) return "Article inconnu ("+id+")"; const v=variants(m)[vi]; if(!(v&&v[0])) return m.name; return m.choice ? (m.cname||"")+v[0] : m.name+" · "+v[0]; }
+function labelOf(id,vi){ const m=BY_ID[id]; if(!m) return t("unknown")+" ("+id+")"; const v=variants(m)[vi]; if(!(v&&v[0])) return nameOf(m); return m.choice ? L(m.cname||"", m.cen||m.cname||"")+vlab(v[0]) : nameOf(m)+" · "+vlab(v[0]); }
 
 /* ============ HELPERS ============ */
 const $ = s=>document.querySelector(s);
 const app = $("#app"), bar = $("#bar");
-const params = new URLSearchParams(location.search);
-const MODE = (params.get("mode")||"").toLowerCase();
 const NSEATS = Math.max(4, Math.min(120, parseInt(params.get("n"))||SEATS_DEFAULT));
-const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,"\u00a0")+"\u00a0F";
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g," ")+" F";
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store = {
   get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
@@ -285,18 +385,55 @@ function seatInfo(n){
   const pos = (n-1)%4;               // 0:G fenêtre, 1:G couloir, 2:D fenêtre, 3:D couloir
   return { n, row: Math.floor((n-1)/4)+1, side: pos<2?"Gauche":"Droite", type: (pos===0||pos===2)?"Fenêtre":"Couloir" };
 }
+const seatType = s => s.type==="Fenêtre" ? t("window") : t("aisle");
 function qrSvg(text, ec){
   const q = qrcode(0, ec||"M"); q.addData(text); q.make();
   return q.createSvgTag({cellSize:4, margin:2, scalable:true});
 }
 let toastT;
 function toast(msg, err){
-  const t=$("#toast"); t.textContent=msg; t.className="toast on"+(err?" err":"");
-  clearTimeout(toastT); toastT=setTimeout(()=>t.className="toast"+(err?" err":""),2200);
+  const el=$("#toast"); el.textContent=msg; el.className="toast on"+(err?" err":"");
+  clearTimeout(toastT); toastT=setTimeout(()=>el.className="toast"+(err?" err":""),2200);
+}
+/* TIBLOGICS : déposez tiblogics-logo.png à côté de index.html pour afficher le logo (sinon le nom s'affiche). */
+const TIB_MARK = `<a class="tibl" href="https://tiblogics.com" target="_blank" rel="noopener"><img src="tiblogics-logo.png" alt="TIBLOGICS" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tib',textContent:'TIBLOGICS'}))"></a>`;
+const powered = () => `<span class="pw">${t("poweredBy")} ${TIB_MARK}</span>`;
+const langBtn = () => MODE ? "" : `<button class="langbtn" data-lang aria-label="Langue / Language"><b class="${LANG==="fr"?"on":""}">FR</b><b class="${LANG==="en"?"on":""}">EN</b></button>`;
+function bindLang(root, rerender){
+  (root||document).querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{ setLang(LANG==="fr"?"en":"fr"); rerender(); });
 }
 function header(stepIdx, right){
   const steps = stepIdx==null ? "" : `<div class="steps">${[0,1,2].map(i=>`<div class="${i<=stepIdx?"on":""}"></div>`).join("")}</div>`;
-  return `<header class="top"><div class="brand">${LOGO}<div><h1>${COMPANY}</h1><small>Menu à bord · ${TAGLINE}</small></div>${right||""}</div>${steps}</header>`;
+  return `<header class="top"><div class="brand">${LOGO}<div><h1>${COMPANY}</h1><small>${t("sub")} · ${t("tagline")}</small></div>${right||""}${langBtn()}</div>${steps}</header>`;
+}
+
+/* ============ CONFETTIS ============ */
+function confetti(opts){
+  try{ if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return; }catch(e){}
+  opts=opts||{};
+  let cv=document.getElementById("confetti");
+  if(!cv){ cv=document.createElement("canvas"); cv.id="confetti"; document.body.appendChild(cv); }
+  const dpr=Math.min(2,window.devicePixelRatio||1), W=innerWidth, H=innerHeight;
+  cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const cols=["#f5a524","#ffffff","#e2342b","#1f9e4a","#2f8fd8","#ffd84d"];
+  const n=opts.n||170, ox=opts.x!=null?opts.x:W/2, oy=opts.y!=null?opts.y:H*0.36, P=[];
+  for(let i=0;i<n;i++){
+    const a=(opts.spread||Math.PI*2)*Math.random()+(opts.angle||0), sp=5+Math.random()*(opts.power||11);
+    P.push({x:ox,y:oy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(opts.lift||6),w:6+Math.random()*6,h:4+Math.random()*8,
+      r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[i%cols.length],s:Math.random()<.25,sw:Math.random()*6});
+  }
+  const t0=performance.now();
+  (function frame(now){
+    const el=now-t0; ctx.clearRect(0,0,W,H); let alive=0;
+    for(const p of P){
+      p.vx*=.985; p.vy=p.vy*.985+.28; p.x+=p.vx+Math.sin((el/180)+p.sw)*.6; p.y+=p.vy; p.r+=p.vr;
+      if(p.y<H+20){ alive++;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.globalAlpha=Math.max(0,1-el/4200); ctx.fillStyle=p.c;
+        if(p.s){ ctx.beginPath(); ctx.arc(0,0,p.w/2.4,0,6.283); ctx.fill(); } else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.r*1.7))+1);
+        ctx.restore(); }
+    }
+    if(alive && el<4200) requestAnimationFrame(frame); else ctx.clearRect(0,0,W,H);
+  })(t0);
 }
 
 /* =====================================================
@@ -309,24 +446,74 @@ const T = {
   code: store.get("elt_code", null),
   pref: "all",
   view: "seat",
-  cat: CATS[0].id
+  cat: CATS[0].id,
+  unroll: false
 };
+/* Nouveau voyage : on efface siège et panier après 8 h d'inactivité */
+(()=>{ const ts=store.get("elt_ts",0); if(Date.now()-ts>8*3600e3){ T.seat=null; T.cart={}; T.note=""; T.code=null; } store.set("elt_ts",Date.now()); })();
 const urlSeat = parseInt(params.get("s"));
-if(urlSeat>=1 && urlSeat<=NSEATS){ T.seat = urlSeat; T.view = "menu"; }
+/* Siège verrouillé : le voyageur est arrivé par le QR code collé au dos de son siège */
+T.locked = urlSeat>=1 && urlSeat<=NSEATS;
+if(T.locked){ if(T.seat!==urlSeat){ T.seat=urlSeat; T.cart={}; T.note=""; T.code=null; } T.view = "menu"; }
 else if(T.seat && T.seat>NSEATS) T.seat=null;
 if(T.seat && !urlSeat && Object.keys(T.cart).length) T.view="menu";
-function saveT(){ store.set("elt_seat",T.seat); store.set("elt_cart",T.cart); store.set("elt_note",T.note); store.set("elt_code",T.code); }
+function saveT(){ store.set("elt_ts",Date.now()); store.set("elt_seat",T.seat); store.set("elt_cart",T.cart); store.set("elt_note",T.note); store.set("elt_code",T.code); }
 function cartLines(){ return Object.entries(T.cart).filter(([,q])=>q>0).map(([k,q])=>{ const [id,vi]=k.split("."); return {k,id,vi:+vi,q,p:priceOf(id,+vi)}; }); }
 function cartCount(){ return cartLines().reduce((a,l)=>a+l.q,0); }
 function cartTotal(){ return cartLines().reduce((a,l)=>a+l.q*l.p,0); }
-function setQty(k,d){ const q=Math.max(0,(T.cart[k]||0)+d); if(q) T.cart[k]=q; else delete T.cart[k]; T.code=null; saveT(); }
+function setQty(k,d){ const q=Math.max(0,(T.cart[k]||0)+d); if(q) T.cart[k]=q; else delete T.cart[k]; saveT(); }
+
+/* Écran d'accueil « Bienvenue à bord » avec confettis, avant de dérouler le menu */
+function showWelcome(){
+  const sp=document.createElement("div"); sp.className="splash"; sp.id="splash";
+  const draw=()=>{
+    const s=T.seat && seatInfo(T.seat);
+    sp.innerHTML = `<div class="stop">${langBtn()}</div>
+      <div class="sbody">
+        <div class="slogo">${LOGO}</div>
+        <div class="w1">${t("welcome")}</div>
+        <div class="w2">${t("welcomeOf")}</div>
+        <div class="w3">${t("tagline")}</div>
+        <p class="w4">${t("welcomeLead")}</p>
+        ${s?`<div class="sseat">${t("yourSeat")} : <b>${s.n}</b> · ${seatType(s)}</div>`:""}
+        <button class="btn amber cta" id="enter">${s?t("ctaMenu"):t("ctaSeat")} ›</button>
+      </div>
+      <div class="sfoot">${powered()}</div>`;
+    bindLang(sp, draw);
+    sp.querySelector("#enter").onclick = enter;
+  };
+  const enter=()=>{
+    confetti({n:90, y:innerHeight*0.75, angle:-Math.PI*0.9, spread:Math.PI*0.8, power:9, lift:4});
+    try{ sessionStorage.setItem("elt_welcomed","1"); }catch(e){}
+    T.unroll=true; renderTraveler();
+    sp.classList.add("out");
+    setTimeout(()=>sp.remove(), 800);
+  };
+  draw();
+  document.body.appendChild(sp);
+  setTimeout(()=>confetti(), 350);
+  setTimeout(()=>confetti({n:70, x:innerWidth*0.15, y:innerHeight*0.2, power:8}), 900);
+  setTimeout(()=>confetti({n:70, x:innerWidth*0.85, y:innerHeight*0.2, power:8}), 1150);
+}
+function welcomeNeeded(){
+  if(T.code && T.view!=="seat" && cartCount()) return false;   // retour sur une commande déjà en cours
+  try{ return !sessionStorage.getItem("elt_welcomed"); }catch(e){ return true; }
+}
+function applyUnroll(){
+  if(!T.unroll) return; T.unroll=false;
+  app.classList.add("unroll");
+  app.querySelectorAll(".row, .item, .sec h3, .cats button, .pref, .legend, .wrap > h2, .wrap > p.lead").forEach((el,i)=>{ el.style.animationDelay = Math.min(i,22)*45+"ms"; });
+  setTimeout(()=>app.classList.remove("unroll"), 2200);
+}
 
 function renderTraveler(){
   window.scrollTo(0,0);
-  if(T.view==="seat") return viewSeat();
-  if(T.view==="menu") return viewMenu();
-  if(T.view==="cart") return viewCart();
-  if(T.view==="qr") return viewQR();
+  if(T.view==="seat") viewSeat();
+  else if(T.view==="menu") viewMenu();
+  else if(T.view==="cart") viewCart();
+  else if(T.view==="qr") viewQR();
+  bindLang(app, renderTraveler);
+  applyUnroll();
 }
 
 function viewSeat(){
@@ -335,64 +522,67 @@ function viewSeat(){
     if(n>NSEATS) return `<div></div>`;
     const s=seatInfo(n), w=s.type==="Fenêtre";
     const dim = (T.pref==="win"&&!w)||(T.pref==="ais"&&w);
-    return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${T.seat===n?"sel":""}" data-seat="${n}" aria-label="Siège ${n}, ${s.type}">${n}<small>${w?"Fenêtre":"Couloir"}</small></button>`;
+    return `<button class="seat ${w?"w":"a"} ${side} ${dim?"dim":""} ${T.seat===n?"sel":""}" data-seat="${n}" aria-label="${t("seat")} ${n}, ${seatType(s)}">${n}<small>${w?t("winShort"):t("aisleShort")}</small></button>`;
   };
   let html = "";
   for(let r=0;r<rows;r++){
     const b=r*4;
     // Gauche : fenêtre (1) puis couloir (2) | allée | Droite : couloir (4) puis fenêtre (3)
-    html += `<div class="row"><div class="rown">${r+1}</div>${seatBtn(b+1,"l")}${seatBtn(b+2,"l")}<div class="aisle">ALLÉE</div>${seatBtn(b+4,"r")}${seatBtn(b+3,"r")}</div>`;
+    html += `<div class="row"><div class="rown">${r+1}</div>${seatBtn(b+1,"l")}${seatBtn(b+2,"l")}<div class="aisle">${t("aisleLbl")}</div>${seatBtn(b+4,"r")}${seatBtn(b+3,"r")}</div>`;
   }
   app.innerHTML = header(0) + `<div class="wrap">
-    <h2>Bienvenue à bord</h2>
-    <p class="lead">Choisissez le siège indiqué sur votre billet, puis commandez votre repas. L'hôtesse vous servira directement à votre place.</p>
+    <h2>${t("chooseSeat")}</h2>
+    <p class="lead">${t("seatLead")}</p>
     <div class="pref" id="pref">
-      <button data-p="all" class="${T.pref==="all"?"on":""}">Tous</button>
-      <button data-p="win" class="${T.pref==="win"?"on":""}">Fenêtre</button>
-      <button data-p="ais" class="${T.pref==="ais"?"on":""}">Couloir</button>
+      <button data-p="all" class="${T.pref==="all"?"on":""}">${t("all")}</button>
+      <button data-p="win" class="${T.pref==="win"?"on":""}">${t("window")}</button>
+      <button data-p="ais" class="${T.pref==="ais"?"on":""}">${t("aisle")}</button>
     </div>
     <div class="legend">
-      <span><i class="dot" style="border-color:#9fd0e6;box-shadow:inset 4px 0 0 var(--win)"></i>Fenêtre</span>
-      <span><i class="dot" style="border-color:#c9bdf0"></i>Couloir</span>
-      <span><i class="dot" style="background:var(--amber);border-color:var(--amber-d)"></i>Votre siège</span>
+      <span><i class="dot" style="border-color:#9fd0e6;box-shadow:inset 4px 0 0 var(--win)"></i>${t("window")}</span>
+      <span><i class="dot" style="border-color:#c9bdf0"></i>${t("aisle")}</span>
+      <span><i class="dot" style="background:var(--amber);border-color:var(--amber-d)"></i>${t("yourSeat")}</span>
     </div>
     <div class="bus">
-      <div class="front"><div class="wheel"></div><span>AVANT DU BUS</span><span>Porte ▸</span></div>
+      <div class="front"><div class="wheel"></div><span>${t("front")}</span><span>${t("door")}</span></div>
       ${html}
-      <div class="back">ARRIÈRE</div>
+      <div class="back">${t("back")}</div>
     </div>
+    <div class="foot">${powered()}</div>
   </div>`;
-  app.querySelectorAll("[data-seat]").forEach(b=>b.onclick=()=>{ T.seat=+b.dataset.seat; saveT(); viewSeat(); });
-  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ T.pref=b.dataset.p; viewSeat(); });
+  app.querySelectorAll("[data-seat]").forEach(b=>b.onclick=()=>{ T.seat=+b.dataset.seat; saveT(); viewSeat(); bindLang(app, renderTraveler); });
+  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ T.pref=b.dataset.p; viewSeat(); bindLang(app, renderTraveler); });
   const s = T.seat && seatInfo(T.seat);
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="go" ${T.seat?"":"disabled"}>${s?`Siège ${s.n} · ${s.type}`:"Sélectionnez un siège"}<span class="sp">Voir le menu ›</span></button></div>`;
-  $("#go").onclick=()=>{ if(T.seat){ T.view="menu"; renderTraveler(); } };
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="go" ${T.seat?"":"disabled"}>${s?`${t("seat")} ${s.n} · ${seatType(s)}`:t("selectSeat")}<span class="sp">${t("seeMenu")}</span></button></div>`;
+  $("#go").onclick=()=>{ if(T.seat){ T.view="menu"; T.unroll=true; renderTraveler(); } };
   if(T.seat){ const el=app.querySelector(`[data-seat="${T.seat}"]`); el&&el.scrollIntoView({block:"center"}); }
 }
 
 function stepper(k){
   const q=T.cart[k]||0;
-  return `<div class="step ${q?"":"zero"}"><button class="minus" data-k="${k}" data-d="-1" aria-label="Retirer">−</button><span>${q}</span><button class="plus" data-k="${k}" data-d="1" aria-label="Ajouter">+</button></div>`;
+  return `<div class="step ${q?"":"zero"}"><button class="minus" data-k="${k}" data-d="-1" aria-label="${t("remove")}">−</button><span>${q}</span><button class="plus" data-k="${k}" data-d="1" aria-label="${t("add")}">+</button></div>`;
 }
 function itemCard(m){
   const vs=variants(m); const has = vs.some((_,i)=>T.cart[m.id+"."+i]);
+  const d=descOf(m);
   let body;
   if(!m.v){
-    body = `<div class="ihead"><div><div class="iname">${esc(m.name)}</div>${m.desc?`<div class="idesc">${esc(m.desc)}</div>`:""}<div class="iprice mt" style="margin-top:6px">${fmt(m.price)}</div></div>${stepper(m.id+".0")}</div>`;
+    body = `<div class="ihead"><div><div class="iname">${esc(nameOf(m))}</div>${d?`<div class="idesc">${esc(d)}</div>`:""}<div class="iprice mt" style="margin-top:6px">${fmt(m.price)}</div></div>${stepper(m.id+".0")}</div>`;
   } else {
-    body = `<div class="iname">${esc(m.name)}</div>${m.desc?`<div class="idesc">${esc(m.desc)}</div>`:""}` +
-      vs.map((v,i)=>`<div class="vline"><div class="vl">${esc(v[0])} · <b>${fmt(v[1])}</b></div>${stepper(m.id+"."+i)}</div>`).join("");
+    body = `<div class="iname">${esc(nameOf(m))}</div>${d?`<div class="idesc">${esc(d)}</div>`:""}` +
+      vs.map((v,i)=>`<div class="vline"><div class="vl">${esc(vlab(v[0]))} · <b>${fmt(v[1])}</b></div>${stepper(m.id+"."+i)}</div>`).join("");
   }
   return `<div class="item ${has?"has":""}" id="it-${m.id}">${body}</div>`;
 }
+function seatChip(){ const s=seatInfo(T.seat); return T.locked ? `<button class="seatchip" id="chg" title="${esc(t("lockedSeat"))}">🔒 ${t("seat")} ${s.n} · ${seatType(s)}</button>` : `<button class="seatchip" id="chg">${t("seat")} ${s.n} · ${seatType(s)} ✎</button>`; }
+function chgSeat(){ if(T.locked){ toast(t("lockedSeat")); return; } T.view="seat"; renderTraveler(); }
 function viewMenu(){
-  const s=seatInfo(T.seat);
-  app.innerHTML = header(1, `<button class="seatchip" id="chg">Siège ${s.n} · ${s.type} ✎</button>`) +
-    `<nav class="cats" id="cats">${CATS.map(c=>`<button data-c="${c.id}" class="${T.cat===c.id?"on":""}">${c.label}</button>`).join("")}</nav>` +
-    CATS.map(c=>`<section class="sec" id="sec-${c.id}"><h3>${c.label}</h3>${MENU.filter(m=>m.cat===c.id).map(itemCard).join("")}</section>`).join("") +
-    `<div class="foot">Carte ${CATERER} · Prix en FCFA · Paiement auprès de l'hôtesse<br>${COMPANY}, ${TAGLINE.toLowerCase()}</div>`;
+  app.innerHTML = header(1, seatChip()) +
+    `<nav class="cats" id="cats">${CATS.map(c=>`<button data-c="${c.id}" class="${T.cat===c.id?"on":""}">${catLabel(c)}</button>`).join("")}</nav>` +
+    CATS.map(c=>`<section class="sec" id="sec-${c.id}"><h3>${catLabel(c)}</h3>${MENU.filter(m=>m.cat===c.id).map(itemCard).join("")}</section>`).join("") +
+    `<div class="foot">${t("menuFoot")}<br>${COMPANY}, ${t("tagline").toLowerCase()}<br>${powered()}</div>`;
   $("#cats").style.top=$("header.top").offsetHeight+"px";
-  $("#chg").onclick=()=>{ T.view="seat"; renderTraveler(); };
+  $("#chg").onclick=chgSeat;
   app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
     T.cat=b.dataset.c; const sec=$("#sec-"+T.cat);
     window.scrollTo({top: sec.getBoundingClientRect().top + scrollY - 120, behavior:"smooth"});
@@ -416,27 +606,27 @@ function bindSteppers(root, after){
 }
 function menuBar(){
   const c=cartCount();
-  bar.innerHTML = `<div class="in"><button class="btn" id="go" ${c?"":"disabled"}>${c?`<span class="cnt">${c}</span> Voir ma commande<span class="sp">${fmt(cartTotal())}</span>`:"Ajoutez des articles"}</button></div>`;
+  bar.innerHTML = `<div class="in"><button class="btn" id="go" ${c?"":"disabled"}>${c?`<span class="cnt">${c}</span> ${t("viewOrder")}<span class="sp">${fmt(cartTotal())}</span>`:t("addItems")}</button></div>`;
   $("#go").onclick=()=>{ if(cartCount()){ T.view="cart"; renderTraveler(); } };
 }
 
 function viewCart(){
   window.onscroll=null;
-  const s=seatInfo(T.seat), lines=cartLines();
-  if(!lines.length){ T.view="menu"; return renderTraveler(); }
-  app.innerHTML = header(1, `<button class="seatchip" id="chg">Siège ${s.n} · ${s.type} ✎</button>`) + `<div class="wrap">
-    <h2>Ma commande</h2><p class="lead">Vérifiez avant de générer votre code.</p>
+  const lines=cartLines();
+  if(!lines.length){ T.view="menu"; return viewMenu(); }
+  app.innerHTML = header(1, seatChip()) + `<div class="wrap">
+    <h2>${t("myOrder")}</h2><p class="lead">${t("checkLead")}</p>
     <div class="card" id="lines">${lines.map(l=>`<div class="cline"><div class="nm">${esc(labelOf(l.id,l.vi))}<small>${fmt(l.p)} × ${l.q} = ${fmt(l.p*l.q)}</small></div>${stepper(l.k)}</div>`).join("")}
-      <div class="tot"><span>Total</span><span>${fmt(cartTotal())}</span></div></div>
-    <label class="lb" for="note">Remarque pour l'hôtesse (facultatif)</label>
-    <textarea id="note" maxlength="80" placeholder="Ex. : sans piment, sauce à part, monnaie sur 10 000 F…">${esc(T.note)}</textarea>
-    <button class="btn ghost mt" id="more">+ Ajouter d'autres articles</button>
+      <div class="tot"><span>${t("total")}</span><span>${fmt(cartTotal())}</span></div></div>
+    <label class="lb" for="note">${t("noteLbl")}</label>
+    <textarea id="note" maxlength="80" placeholder="${esc(t("notePh"))}">${esc(T.note)}</textarea>
+    <button class="btn ghost mt" id="more">${t("addMore")}</button>
   </div>`;
-  $("#chg").onclick=()=>{ T.view="seat"; renderTraveler(); };
+  $("#chg").onclick=chgSeat;
   $("#more").onclick=()=>{ T.view="menu"; renderTraveler(); };
-  $("#note").oninput=e=>{ T.note=e.target.value; T.code=null; saveT(); };
-  bindSteppers(app, ()=>viewCart());
-  bar.innerHTML = `<div class="in"><button class="btn amber" id="go">Générer mon code QR<span class="sp">${fmt(cartTotal())}</span></button></div>`;
+  $("#note").oninput=e=>{ T.note=e.target.value; saveT(); };
+  bindSteppers(app, ()=>{ viewCart(); bindLang(app, renderTraveler); });
+  bar.innerHTML = `<div class="in"><button class="btn amber" id="go">${t("genQR")}<span class="sp">${fmt(cartTotal())}</span></button></div>`;
   $("#go").onclick=()=>{ if(!T.code) T.code=newCode(); saveT(); T.view="qr"; renderTraveler(); };
 }
 function newCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; for(let i=0;i<4;i++) c+=a[Math.floor(Math.random()*a.length)]; return c; }
@@ -450,19 +640,19 @@ function viewQR(){
   const s=seatInfo(T.seat), lines=cartLines();
   app.innerHTML = header(2) + `<div class="wrap">
     <div class="ticket">
-      <div class="th"><div style="font-size:12px;opacity:.8">SIÈGE</div><div class="big">${s.n}</div><div style="font-size:13px;margin-top:4px">${s.type} · Rangée ${s.row} · Côté ${s.side==="Gauche"?"gauche":"droit"}</div></div>
+      <div class="th"><div style="font-size:12px;opacity:.8">${t("seatUp")}</div><div class="big">${s.n}</div><div style="font-size:13px;margin-top:4px">${seatType(s)} · ${t("row")} ${s.row} · ${s.side==="Gauche"?t("sideL"):t("sideR")}</div></div>
       <div class="qr">${qrSvg(buildPayload())}</div>
       <div class="code">${T.code}</div>
       <div class="tb">
         ${lines.map(l=>`<div style="display:flex;justify-content:space-between;font-size:14px;padding:2px 0"><span>${l.q} × ${esc(labelOf(l.id,l.vi))}</span><span>${fmt(l.p*l.q)}</span></div>`).join("")}
         ${T.note.trim()?`<div class="onote">📝 ${esc(T.note.trim())}</div>`:""}
-        <div class="tot"><span>À payer</span><span>${fmt(cartTotal())}</span></div>
+        <div class="tot"><span>${t("toPay")}</span><span>${fmt(cartTotal())}</span></div>
       </div>
     </div>
-    <div class="tip">Gardez cet écran ouvert. Quand l'hôtesse arrive à votre rangée, montrez-lui ce code : elle le scanne et reçoit votre commande. Pensez à augmenter la luminosité de votre écran.</div>
-    <button class="btn ghost" id="edit">Modifier ma commande</button>
-    <button class="btn ghost mt" id="reset">Nouvelle commande</button>
-    <div class="foot">Commande ${T.code} · ${COMPANY}<br>Merci de voyager avec nous. ${TAGLINE} !</div>
+    <div class="tip">${t("tip")}</div>
+    <button class="btn ghost" id="edit">${t("edit")}</button>
+    <button class="btn ghost mt" id="reset">${t("reset")}</button>
+    <div class="foot">${t("orderN")} ${T.code} · ${COMPANY}<br>${t("thanks")}<br>${powered()}</div>
   </div>`;
   bar.innerHTML="";
   $("#edit").onclick=()=>{ T.view="cart"; renderTraveler(); };
@@ -503,7 +693,9 @@ function addOrder(o){
     saveH(); return {upd:true, o:H.orders[i]};
   }
   const rec = {...o, t:now, served:false, paid:false};
-  H.orders.push(rec); saveH(); return {o:rec};
+  const other = H.orders.find(x=>x.seat===o.seat && x.code!==o.code);
+  if(other){ rec.conflict=other.code; other.conflict=rec.code; }
+  H.orders.push(rec); saveH(); return {o:rec, conflict:other};
 }
 function renderHostess(){
   const list = H.orders.slice().sort((a,b)=>a.seat-b.seat);
@@ -522,7 +714,7 @@ function renderHostess(){
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:6px 0 8px">1. À préparer au poste</h3>
       <div class="card"><ul class="prep big">${aggItems(ro).map(a=>`<li><span>${esc(a.label)}</span><b>× ${a.q}</b></li>`).join("")}</ul></div>
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:16px 0 8px">2. À livrer, dans l'ordre des sièges</h3>
-      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
+      <div class="card"><ul class="dl">${ro.map(o=>`<li><div class="sn">${o.seat}<small>${seatInfo(o.seat).type==="Fenêtre"?"FEN.":"COUL."}</small></div><div class="it">${o.items.map(i=>`${i.q} × ${esc(labelOf(i.id,i.vi))}`).join("<br>")}${o.note?`<br><em>📝 ${esc(o.note)}</em>`:""}${o.conflict?`<br><em style="color:var(--bad)">⚠ Siège en double, vérifiez le billet</em>`:""}</div><div class="am">${fmt(o.total)}<br>${o.served?`<span class="badge">SERVI</span>`:o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">À PAYER</span>`}</div></li>`).join("")}</ul></div>
       <button class="btn ghost mt" id="resume">📷 Ajouter des commandes à cette tournée</button>
       <button class="btn mt" id="allserved">✓ Toute la tournée servie</button>`;
     }
@@ -553,7 +745,7 @@ function renderHostess(){
       <button class="btn ghost mt" id="manualgo">Ajouter la commande</button>
       <button class="btn ghost mt" id="clear" style="color:var(--bad)">Vider toutes les commandes (fin du trajet)</button>
     </details>
-    <div class="foot">Les commandes restent enregistrées sur ce téléphone.</div>
+    <div class="foot">Les commandes restent enregistrées sur ce téléphone.<br>${powered()}</div>
   </div>`;
   app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ H.tab=b.dataset.t; renderHostess(); });
   app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
@@ -562,7 +754,7 @@ function renderHostess(){
     if(a==="serve") o.served=!o.served;
     if(a==="pay") o.paid=!o.paid;
     if(a==="del"){
-      if(b.dataset.armed){ H.orders=H.orders.filter(x=>x!==o); }
+      if(b.dataset.armed){ H.orders=H.orders.filter(x=>x!==o); H.orders.forEach(x=>{ if(x.conflict===o.code && x.seat===o.seat) delete x.conflict; }); }
       else { b.dataset.armed="1"; b.textContent="Sûr ?"; b.style.width="70px"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent="✕"; b.style.width=""; } },2500); return; }
     }
     saveH(); renderHostess();
@@ -584,6 +776,7 @@ function orderCard(o){
       <div class="ometa"><b>${fmt(o.total)}</b>${o.paid?`<span class="badge">PAYÉ</span>`:`<span class="badge unpaid">NON PAYÉ</span>`}<br>Rangée ${s.row} · ${s.side} · ${time} · #${esc(o.code)}</div></div>
     <ul class="olist">${o.items.map(i=>`<li><span>${i.q} × ${esc(labelOf(i.id,i.vi))}</span><span>${fmt(i.q*priceOf(i.id,i.vi))}</span></li>`).join("")}</ul>
     ${o.note?`<div class="onote">📝 ${esc(o.note)}</div>`:""}
+    ${o.conflict?`<div class="conf">⚠ Deux commandes pour le siège ${o.seat} (#${esc(o.code)} et #${esc(o.conflict)}). Même voyageur ? Sinon, vérifiez les billets et supprimez la mauvaise commande.</div>`:""}
     <div class="oact">
       <button data-act="pay" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.paid?"on":""}">${o.paid?"✓ Payé":"Marquer payé"}</button>
       <button data-act="serve" data-code="${esc(o.code)}" data-seat="${o.seat}" class="${o.served?"on":""}">${o.served?"✓ Servi":"Marquer servi"}</button>
@@ -600,7 +793,10 @@ function handleScan(txt, manual){
   const r=addOrder(o);
   try{ navigator.vibrate && navigator.vibrate(r.dup?[40,60,40]:120); }catch(e){}
   toast(r.dup?`Siège ${o.seat} déjà enregistré`:r.upd?`Siège ${o.seat} mis à jour · ${fmt(o.total)}`:`Siège ${o.seat} ajouté · ${fmt(o.total)}`, false);
-  beep(true);
+  if(r.conflict){
+    beep(false); try{ navigator.vibrate && navigator.vibrate([300,100,300]); }catch(e){}
+    setTimeout(()=>toast(`⚠ Siège ${o.seat} : il existe déjà la commande #${r.conflict.code}. Vérifiez les billets.`, true), 50);
+  } else beep(true);
   const key=okey(o);
   if(!H.round) H.round={t:Date.now(), keys:[]};
   if(!H.round.keys.includes(key)){ H.round.keys.push(key); }
@@ -680,10 +876,10 @@ function renderAdmin(){
     const N=Math.max(4,Math.min(120,parseInt($("#n").value)||SEATS_DEFAULT));
     const b=$("#base").value.trim(); store.set("elt_base",b);
     const sep=b.includes("?")?"&":"?";
-    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N,"M")}<div class="qf">Réservé au personnel</div></div>`;
+    let html=`<div class="qcard" style="background:#fff7e6"><div class="qh">ESPACE HÔTESSE</div><div class="qs" style="font-size:20px">Scanner</div>${qrSvg(b+sep+"mode=hotesse&n="+N,"M")}<div class="qf">Réservé au personnel</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     for(let i=1;i<=N;i++){
       const s=seatInfo(i);
-      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row}</div>${qrSvg(b+sep+"s="+i+"&n="+N,"M")}<div class="qf">Scannez pour commander · ${TAGLINE}</div></div>`;
+      html+=`<div class="qcard"><div class="qh">${COMPANY.toUpperCase()}</div><div class="qf" style="margin-bottom:2px">Menu à bord</div><div class="qs">${i}</div><div class="qp">${s.type} · Rangée ${s.row}</div>${qrSvg(b+sep+"s="+i+"&n="+N,"M")}<div class="qf">Scannez pour commander · Scan to order</div><div class="qpw">Propulsé par TIBLOGICS</div></div>`;
     }
     $("#sheet").innerHTML=html;
   };
@@ -696,7 +892,7 @@ function renderAdmin(){
 /* ============ ROUTAGE ============ */
 if(MODE==="hotesse"||MODE==="hostess") renderHostess();
 else if(MODE==="admin") renderAdmin();
-else renderTraveler();
+else { if(welcomeNeeded()){ renderTraveler(); showWelcome(); } else renderTraveler(); }
 </script>
 </body>
 </html>

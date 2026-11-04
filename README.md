@@ -17,6 +17,19 @@ No login, no server, no database. The order is stored inside the QR code itself,
 
 Add `&n=54` to any link to set the number of seats (default 54).
 
+## Traveler experience
+
+- Welcome screen "Bienvenue à bord d'Elitis Express" with confetti, then the menu unrolls.
+- French by default, English with the FR/EN button (or `?lang=en` in the link). Hostess and admin screens stay in French.
+- "Propulsé par TIBLOGICS / Powered by TIBLOGICS" on every screen. Add `tiblogics-logo.png` at the root to show the logo instead of the wordmark.
+
+## One traveler per seat
+
+- **Seat-back QR code locks the seat:** a traveler arriving with `?s=12` cannot switch to another seat.
+- **Duplicate alert for the hostess:** if two different orders arrive for the same seat, both are flagged in red so she checks the tickets and deletes the wrong one.
+- Editing an order keeps the same order code, so a re-scan updates the order instead of creating a duplicate.
+- Real-time blocking across phones (a taken seat greyed out for everyone) needs a shared online database: planned for the full version.
+
 ## Seat numbering
 
 Left side: 1 window, 2 aisle. Right side: 3 window, 4 aisle. Then 5 to 8 on row 2, and so on.
@@ -32,7 +45,7 @@ Left side: 1 window, 2 aisle. Right side: 3 window, 4 aisle. Then 5 to 8 on row 
 ## Known limits (pilot version)
 
 - Hostess orders are saved only on her phone (browser storage).
-- No shared seat occupancy: two travelers could select the same seat.
+- No live shared seat occupancy yet (see "One traveler per seat" above for the current safeguards).
 - Camera scanning requires HTTPS (GitHub Pages provides it). Manual code entry is available as a fallback.
 
 The multi-company version (all bus companies in Burkina Faso) will need a backend: companies, buses, trips, menus, reports.
